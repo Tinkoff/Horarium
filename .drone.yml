@@ -20,8 +20,6 @@ steps:
   when:
     event:
     - push
-    branch:
-    - master
 
 - name: push
   image: mcr.microsoft.com/dotnet/core/sdk:2.2
@@ -35,8 +33,6 @@ steps:
   when:
     event:
     - tag
-    branch:
-    - master
 
 
 services:
