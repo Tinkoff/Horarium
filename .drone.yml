@@ -28,7 +28,7 @@ steps:
       from_secret: NUGET_APIKEY
   commands:
   - cd src
-  - dotnet pack Horarium/Horarium.csproj -c Release --no-build  /p:PackageVersion=$DRONE_TAG
+  - dotnet pack Horarium/Horarium.csproj -c Release  /p:PackageVersion=$DRONE_TAG
   - dotnet nuget push **/Horarium.*.nupkg -k $NUGET_APIKEY
   when:
     event:
