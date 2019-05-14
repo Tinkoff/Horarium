@@ -2,12 +2,17 @@ kind: pipeline
 name: default
 
 steps:
+- name: check-mongo
+  image: mongo:4
+  commands:
+  - sleep 5
+  - mongo --host mongo --eval "db.version()"
+
 - name: build
   image: mcr.microsoft.com/dotnet/core/sdk:2.2
   environment:
     MONGO_ADDRESS: mongo
   commands:
-  - echo $MONGO_ADDRESS
   - cd src
   - dotnet build Horarium.sln -c Release
   - dotnet test Horarium.Test/Horarium.Test.csproj --no-restore
@@ -22,9 +27,7 @@ steps:
 services:
 - name: mongo
   image: mongo:4
-  commands:
-  - sleep 5
-  - mongo --host localhost --eval "db.version()"
+  command: [ --smallfiles ]
   ports:
   - 27017
   
