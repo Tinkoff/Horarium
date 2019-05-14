@@ -3,6 +3,11 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Description>Horarium</Description>
     <Version>1.0.0$(VersionSuffix)</Version>
+    <Title>Horarium</Title>
+    <Authors>bobreshovr</Authors>
+    <PackageDescription>Horarium is the .Net library to manage background jobs</PackageDescription>
+    <RepositoryUrl>https://github.com/TinkoffCreditSystems/Horarium</RepositoryUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Cronos" Version="0.6.3" />
