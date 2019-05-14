@@ -1,5 +1,7 @@
 
 
+using System;
+
 namespace Horarium.IntegrationTest
 {
     public class IntegrationTestBase
@@ -8,7 +10,7 @@ namespace Horarium.IntegrationTest
         protected const string DatabaseNameMongo = "IntegrationTestScheduler";
         
         protected readonly string ConnectionMongo =
-            $"mongodb://localhost:27017/{DatabaseNameMongo}";
+            $"mongodb://{Environment.GetEnvironmentVariable("MONGO_ADDRESS")??"localhost"}:27017/{DatabaseNameMongo}";
 
         
     }

@@ -4,14 +4,26 @@ name: default
 steps:
 - name: build
   image: mcr.microsoft.com/dotnet/core/sdk:2.2
+  environment:
+    MONGO_ADDRESS: mongo
   commands:
   - cd src
   - dotnet build Horarium.sln -c Release
   - dotnet test Horarium.Test/Horarium.Test.csproj --no-restore
+  - dotnet test Horarium.IntegrationTest/Horarium.IntegrationTest.csproj --no-restore 
   when:
     event:
     - push
     branch:
     - master
 
+
+services:
+- name: mongo
+  image: mongo:4
+  commands:
+  - sleep 5
+  - mongo --host localhost --eval "db.version()"
+  ports:
+  - 27017
   
