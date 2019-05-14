@@ -20,6 +20,7 @@ steps:
   when:
     event:
     - push
+    - tag
 
 - name: push
   image: mcr.microsoft.com/dotnet/core/sdk:2.2
@@ -29,7 +30,7 @@ steps:
   commands:
   - cd src
   - dotnet pack Horarium/Horarium.csproj -c Release  /p:PackageVersion=$DRONE_TAG
-  - dotnet nuget push **/Horarium.*.nupkg -k $NUGET_APIKEY
+  - dotnet nuget push **/Horarium.*.nupkg -k $NUGET_APIKEY -s https://www.nuget.org
   when:
     event:
     - tag
