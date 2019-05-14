@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Horarium", "Horarium\Horarium.csproj", "{6F282E69-0744-4652-8458-090F66295357}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Horarium.Test", "Horarium.Test\Horarium.Test.csproj", "{4808B381-8AA8-42E8-AE78-7E8E1BC46947}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Horarium.IntegrationTest", "Horarium.IntegrationTest\Horarium.IntegrationTest.csproj", "{90957511-9034-46CD-A5B8-4383AA8FA1E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Horarium.Sample", "Horarium.Sample\Horarium.Sample.csproj", "{79D8507C-FD7C-4114-8355-140D5BDA44F5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F282E69-0744-4652-8458-090F66295357}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F282E69-0744-4652-8458-090F66295357}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F282E69-0744-4652-8458-090F66295357}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F282E69-0744-4652-8458-090F66295357}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4808B381-8AA8-42E8-AE78-7E8E1BC46947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4808B381-8AA8-42E8-AE78-7E8E1BC46947}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4808B381-8AA8-42E8-AE78-7E8E1BC46947}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4808B381-8AA8-42E8-AE78-7E8E1BC46947}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90957511-9034-46CD-A5B8-4383AA8FA1E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90957511-9034-46CD-A5B8-4383AA8FA1E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90957511-9034-46CD-A5B8-4383AA8FA1E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90957511-9034-46CD-A5B8-4383AA8FA1E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79D8507C-FD7C-4114-8355-140D5BDA44F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79D8507C-FD7C-4114-8355-140D5BDA44F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79D8507C-FD7C-4114-8355-140D5BDA44F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79D8507C-FD7C-4114-8355-140D5BDA44F5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
