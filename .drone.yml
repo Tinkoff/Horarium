@@ -7,6 +7,7 @@ steps:
   environment:
     MONGO_ADDRESS: mongo
   commands:
+  - echo $MONGO_ADDRESS
   - cd src
   - dotnet build Horarium.sln -c Release
   - dotnet test Horarium.Test/Horarium.Test.csproj --no-restore
