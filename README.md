@@ -1,5 +1,7 @@
 # Horarium
 
+[![Build Status](https://cloud.drone.io/api/badges/TinkoffCreditSystems/Horarium/status.svg)](https://cloud.drone.io/TinkoffCreditSystems/Horarium)
+
 Horarium is the .Net library to manage background jobs and its compatibility with .Net Framework and .Net Core.
 Horarium fully based on asynchronous work model, it allows you to run hundreds of parallels jobs on one instance. It supports distributed system for management jobs, that use for it MongoDB.
 
