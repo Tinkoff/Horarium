@@ -2,8 +2,11 @@
 
 [![Build Status](https://cloud.drone.io/api/badges/TinkoffCreditSystems/Horarium/status.svg)](https://cloud.drone.io/TinkoffCreditSystems/Horarium)
 
-Horarium is the .Net library to manage background jobs and its compatibility with .Net Framework and .Net Core.
-Horarium fully based on asynchronous work model, it allows you to run hundreds of parallels jobs on one instance. It supports distributed system for management jobs, that use for it MongoDB.
+Horarium is an open source job scheduling .NET library with an easy to use API, that can be integrated within applications of any scale - from the smallest stand-alone application to the largest e-commerce system.
+
+Horarium is fully based on an asynchronous work model, it allows you to run hundreds of parallel jobs within a single application instance. It supports jobs execution in distributed systems and uses MongoDB as a synchronization backend.
+
+Horarium supports .NET Core/netstandard 2.0 and .NET Framework 4.6.2 and later.
 
 ## Getting started
 
@@ -13,7 +16,7 @@ Add nuget-package Horarium
 dotnet add package Horarium
 ```
 
-Add job implementation interface ```IJob<T>```
+Add job that implements interface ```IJob<T>```
 
 ```csharp
     public class TestJob : IJob<int>
@@ -36,7 +39,7 @@ await horarium.Create<TestJob, int>(666)
 
 ## Add to ```Asp.Net core``` application
 
-Create ```JobFactory```  for creating job use DI in ```Asp.Net core```
+Create ```JobFactory```  for instantiating jobs with DI ```Asp.Net core```
 
 ```csharp
 public class JobFactory : IJobFactory
@@ -60,7 +63,7 @@ public class JobFactory : IJobFactory
     }
 ```
 
-Registration Horarium in DI
+Registrer Horarium in DI
 
 ```csharp
 service.AddSingleton<IHorarium>(serviceProvider =>
@@ -71,7 +74,7 @@ service.AddSingleton<IHorarium>(serviceProvider =>
                     });)
 ```
 
-Use interface ```IHorarium``` in Controller
+Inject interface ```IHorarium``` into Controller
 
 ```csharp
 
@@ -88,7 +91,7 @@ Use interface ```IHorarium``` in Controller
         [HttpPost]
         public Task Run(int count)
         {
-            await horarium.Create<TestJob, int>(count)
+            await _horarium.Create<TestJob, int>(count)
                           .Schedule();
         }
     }
@@ -96,7 +99,7 @@ Use interface ```IHorarium``` in Controller
 
 ## Create Recurrent Job
 
-Add job implementation interface ```IJobRecurrent```
+Add job that implements interface ```IJobRecurrent```
 
 ```csharp
 public class TestRecurrentJob : IJobRecurrent
@@ -109,16 +112,16 @@ public class TestRecurrentJob : IJobRecurrent
     }
 ```
 
-Schedule ```TestRecurrentJob``` that run every 15 seconds
+Schedule ```TestRecurrentJob``` to run every 15 seconds
 
 ```csharp
 await horarium.CreateRecurrent<TestRecurrentJob>(Cron.SecondInterval(15))
                 .Schedule();
 ```
 
-## Create sequence jobs
+## Create sequence of jobs
 
-Sometimes you need to create sequence jobs when first job success second job will run. If the job failed next jobs won't start
+Sometimes you need to create sequence of jobs, where every job would run if and only if previous jobs succeeds. If any job of the sequence fails next jobs won't run
 
 ```csharp
 await horarium
@@ -132,4 +135,10 @@ await horarium
 
 ![Distributed Scheme](DistributedScheme.png)
 
-Horarium has two types of class: server and client. A client can only add new jobs in DB and server can add and run jobs. Horarium guarantees that job run **only one time.**
+Horarium has two types of workers: server and client. Server can run jobs and schedule new jobs, while client can only schedule new jobs.
+
+Horarium guarantees that a job would run **exactly once**
+
+## Things to watch out for
+
+Every Horarium instance consults MongoDB about new jobs to run every 100ms (default), thus creating some load on the DB server. This interval can be changed in ```HorariumSettings```
