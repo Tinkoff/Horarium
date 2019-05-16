@@ -63,7 +63,7 @@ public class JobFactory : IJobFactory
     }
 ```
 
-Registrer Horarium in DI
+Register Horarium in DI
 
 ```csharp
 services.AddSingleton<IHorarium>(serviceProvider =>
@@ -121,7 +121,7 @@ await horarium.CreateRecurrent<TestRecurrentJob>(Cron.SecondInterval(15))
 
 ## Create sequence of jobs
 
-Sometimes you need to create sequence of jobs, where every job would run if and only if previous jobs succeeds. If any job of the sequence fails next jobs won't run
+Sometimes you need to create sequence of jobs, where every next job would run if and only if previous job succeeds. If any job of the sequence fails next jobs won't run
 
 ```csharp
 await horarium
