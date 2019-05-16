@@ -66,7 +66,7 @@ public class JobFactory : IJobFactory
 Registrer Horarium in DI
 
 ```csharp
-service.AddSingleton<IHorarium>(serviceProvider =>
+services.AddSingleton<IHorarium>(serviceProvider =>
                 new HorariumServer("mongodb://localhost:27017/horarium",
                     new HorariumSettings()
                     {
@@ -89,7 +89,7 @@ Inject interface ```IHorarium``` into Controller
     public class HomeController : Controller
     {
         [HttpPost]
-        public Task Run(int count)
+        public async Task Run(int count)
         {
             await _horarium.Create<TestJob, int>(count)
                           .Schedule();
