@@ -39,7 +39,7 @@ await horarium.Create<TestJob, int>(666)
 
 ## Add to ```Asp.Net core``` application
 
-Create ```JobFactory```  for instantiating jobs with DI ```Asp.Net core```
+Create ```JobFactory```  for instantiating jobs with DI
 
 ```csharp
 public class JobFactory : IJobFactory
