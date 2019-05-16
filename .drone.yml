@@ -21,6 +21,7 @@ steps:
     event:
     - push
     - tag
+    - pull-request
 
 - name: push
   image: mcr.microsoft.com/dotnet/core/sdk:2.2
