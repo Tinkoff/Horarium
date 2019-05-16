@@ -18,19 +18,13 @@ namespace Horarium
 
         private readonly TimeSpan _timeoutStop = TimeSpan.FromSeconds(5);
 
-        public HorariumServer(string mongoConnectionString)
-            : this(new HorariumSettings(),
-                MongoRepositoryFactory.Create(mongoConnectionString))
+        public HorariumServer(IJobRepository jobRepository)
+            : this(jobRepository, new HorariumSettings())
         {
         }
         
-        public HorariumServer(string mongoConnectionString, HorariumSettings settings)
-            : this(settings, MongoRepositoryFactory.Create(mongoConnectionString))
-        {
-        }
-
-        private HorariumServer(HorariumSettings settings, IJobRepository jobRepository)
-            : base(settings, jobRepository)
+        private HorariumServer( IJobRepository jobRepository, HorariumSettings settings)
+            : base(jobRepository, settings)
         {
             _settings = settings;
             _adderJobs = new AdderJobs(jobRepository, _settings.JsonSerializerSettings);

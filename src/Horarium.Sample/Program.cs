@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Horarium.Mongo;
 
 namespace Horarium.Sample
 {
@@ -17,12 +18,12 @@ namespace Horarium.Sample
 
         static async Task StartScheduler()
         {
-             var horarium = new HorariumServer("mongodb://localhost:27017/schedOpenSource");
+             var horarium = new HorariumServer(MongoRepositoryFactory.Create("mongodb://localhost:27017/schedOpenSource"));
             
             
             await horarium.CreateRecurrent<TestRecurrentJob>(Cron.SecondInterval(10)).Schedule();
 
-            await new HorariumClient("mongodb://localhost:27017/schedOpenSource")
+            await new HorariumClient(MongoRepositoryFactory.Create("mongodb://localhost:27017/schedOpenSource"))
                 .GetJobStatistic();
 
             var firstJobDelay = TimeSpan.FromSeconds(20);

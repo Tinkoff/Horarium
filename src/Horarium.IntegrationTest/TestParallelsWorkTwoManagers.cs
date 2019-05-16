@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Horarium.IntegrationTest.Jobs;
 using Horarium.Interfaces;
-using Horarium.MongoRepository;
-using Horarium.Repository;
-
+using Horarium.Mongo;
 using Xunit;
 
 namespace Horarium.IntegrationTest
@@ -18,14 +16,14 @@ namespace Horarium.IntegrationTest
         public TestParallelsWorkTwoManagers()
         {
             var provider = new MongoClientProvider(ConnectionMongo);
-            var collection = provider.GetCollection<JobDb>();
+            var collection = provider.GetCollection<JobMongoModel>();
 
-            collection.DeleteMany(MongoDB.Driver.Builders<JobDb>.Filter.Empty);
+            collection.DeleteMany(MongoDB.Driver.Builders<JobMongoModel>.Filter.Empty);
         }
 
         private IHorarium CreateScheduler()
         {
-            var scheduler = new HorariumServer(ConnectionMongo);
+            var scheduler = new HorariumServer(MongoRepositoryFactory.Create(ConnectionMongo));
 
             return scheduler;
         }

@@ -4,7 +4,7 @@ using System.Reflection;
 using Horarium.Repository;
 using MongoDB.Driver;
 
-namespace Horarium.MongoRepository
+namespace Horarium.Mongo
 {
     public sealed class MongoClientProvider : IMongoClientProvider
     {

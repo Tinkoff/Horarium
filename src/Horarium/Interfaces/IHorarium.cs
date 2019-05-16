@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Horarium.Builders.Recurrent;
 using Horarium.Builders.Parameterized;
+using Horarium.Repository;
 
 namespace Horarium.Interfaces
 {
@@ -30,6 +31,6 @@ namespace Horarium.Interfaces
         /// <typeparam name="TJob">Type of job, job will create from factory</typeparam>
         /// <returns></returns>
         IRecurrentJobBuilder CreateRecurrent<TJob>(string cron) where TJob : IJobRecurrent;
-        
+
     }
 }
