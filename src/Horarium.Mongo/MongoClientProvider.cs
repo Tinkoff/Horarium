@@ -39,9 +39,9 @@ namespace Horarium.Mongo
 
         private void CreateIndexes()
         {
-            var issueCollection = GetCollection<JobDb>();
+            var issueCollection = GetCollection<JobMongoModel>();
 
-            issueCollection.Indexes.CreateOne(Builders<JobDb>.IndexKeys
+            issueCollection.Indexes.CreateOne(Builders<JobMongoModel>.IndexKeys
                 .Ascending(x => x.Status)
                 .Ascending(x=>x.StartAt)
                 .Ascending(x=>x.StartedExecuting),
@@ -50,7 +50,7 @@ namespace Horarium.Mongo
                     Background = true
                 });
 
-            issueCollection.Indexes.CreateOne(Builders<JobDb>.IndexKeys
+            issueCollection.Indexes.CreateOne(Builders<JobMongoModel>.IndexKeys
                     .Ascending(x => x.Status)
                     .Ascending(x => x.JobKey),
                 new CreateIndexOptions
@@ -58,7 +58,7 @@ namespace Horarium.Mongo
                     Background = true
                 });
 
-            issueCollection.Indexes.CreateOne(Builders<JobDb>.IndexKeys
+            issueCollection.Indexes.CreateOne(Builders<JobMongoModel>.IndexKeys
                     .Ascending(x => x.JobKey),
                 new CreateIndexOptions
                 {
