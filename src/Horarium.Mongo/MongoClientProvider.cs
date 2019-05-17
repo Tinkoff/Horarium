@@ -39,31 +39,39 @@ namespace Horarium.Mongo
 
         private void CreateIndexes()
         {
-            var issueCollection = GetCollection<JobMongoModel>();
+            var indexKeyBuilder = Builders<JobMongoModel>.IndexKeys;
 
-            issueCollection.Indexes.CreateOne(Builders<JobMongoModel>.IndexKeys
-                .Ascending(x => x.Status)
-                .Ascending(x=>x.StartAt)
-                .Ascending(x=>x.StartedExecuting),
-                new CreateIndexOptions
-                {
-                    Background = true
-                });
+            var collection = GetCollection<JobMongoModel>();
 
-            issueCollection.Indexes.CreateOne(Builders<JobMongoModel>.IndexKeys
-                    .Ascending(x => x.Status)
-                    .Ascending(x => x.JobKey),
-                new CreateIndexOptions
-                {
-                    Background = true
-                });
-
-            issueCollection.Indexes.CreateOne(Builders<JobMongoModel>.IndexKeys
-                    .Ascending(x => x.JobKey),
-                new CreateIndexOptions
-                {
-                    Background = true
-                });
+            collection.Indexes.CreateMany(new[]
+            {
+                new CreateIndexModel<JobMongoModel>(
+                    indexKeyBuilder    
+                        .Ascending(x => x.Status)
+                        .Ascending(x=>x.StartAt)
+                        .Ascending(x=>x.StartedExecuting),
+                    new CreateIndexOptions
+                    {
+                        Background = true
+                    }),
+                
+                new CreateIndexModel<JobMongoModel>(
+                    indexKeyBuilder
+                        .Ascending(x => x.Status)
+                        .Ascending(x => x.JobKey),
+                    new CreateIndexOptions
+                    {
+                        Background = true
+                    }),
+                
+                new CreateIndexModel<JobMongoModel>(
+                    indexKeyBuilder
+                        .Ascending(x => x.JobKey),
+                    new CreateIndexOptions
+                    {
+                        Background = true
+                    })
+            });
         }
     }
 }
