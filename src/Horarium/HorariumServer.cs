@@ -23,7 +23,7 @@ namespace Horarium
         {
         }
         
-        private HorariumServer( IJobRepository jobRepository, HorariumSettings settings)
+        public HorariumServer( IJobRepository jobRepository, HorariumSettings settings)
             : base(jobRepository, settings)
         {
             _settings = settings;
