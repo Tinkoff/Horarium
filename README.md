@@ -1,7 +1,7 @@
 # Horarium
 
 [![Build Status](https://cloud.drone.io/api/badges/TinkoffCreditSystems/Horarium/status.svg)](https://cloud.drone.io/TinkoffCreditSystems/Horarium)
-[![Nuget](https://www.nuget.org/packages/Horarium/)](https://img.shields.io/nuget/v/Horarium.svg)
+[![Nuget](https://img.shields.io/nuget/v/Horarium.svg)](https://www.nuget.org/packages/Horarium)
 
 Horarium is an open source job scheduling .NET library with an easy to use API, that can be integrated within applications of any scale - from the smallest stand-alone application to the largest e-commerce system.
 
