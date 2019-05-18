@@ -6,7 +6,7 @@ using MongoDB.Bson.Serialization.Options;
 
 namespace Horarium.Mongo
 {
-    [MongoEntity("scheduler.jobs")]
+    [MongoEntity("horarium.jobs")]
     public class JobMongoModel
     {
         public JobDb ToJobDb()
@@ -23,15 +23,15 @@ namespace Horarium.Mongo
                 StartedExecuting = StartedExecuting,
                 ExecutedMachine = ExecutedMachine,
                 StartAt = StartAt,
-                NextJob =
-                    NextJob?.ToJobDb(),
+                NextJob = NextJob?.ToJobDb(),
                 Cron = Cron,
                 Delay = Delay,
                 ObsoleteInterval = ObsoleteInterval
             };
         }
 
-        [BsonId] public string JobId { get; set; }
+        [BsonId] 
+        public string JobId { get; set; }
 
         public string JobKey { get; set; }
 

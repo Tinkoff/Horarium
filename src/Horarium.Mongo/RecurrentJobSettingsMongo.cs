@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Horarium.Mongo
 {
-    [MongoEntity("scheduler.recurrentJobSettings")]
+    [MongoEntity("horarium.recurrentJobSettings")]
     public class RecurrentJobSettingsMongo
     {
         public static RecurrentJobSettingsMongo Create(RecurrentJobSettings jobSettings)

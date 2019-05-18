@@ -6,7 +6,7 @@
         <Version>1.0.0$(VersionSuffix)</Version>
         <Title>Horarium.Mongo</Title>
         <Authors>bobreshovr</Authors>
-        <PackageDescription>Horarium.Mongo is the .Net library for support MongoDB in Horarium</PackageDescription>
+        <PackageDescription>Horarium.Mongo is the .Net library to support MongoDB in Horarium</PackageDescription>
         <RepositoryUrl>https://github.com/TinkoffCreditSystems/Horarium</RepositoryUrl>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     </PropertyGroup>
