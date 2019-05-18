@@ -9,7 +9,7 @@ Horarium is fully based on an asynchronous work model, it allows you to run hund
 
 Horarium supports .NET Core/netstandard 2.0 and .NET Framework 4.6.2 and later.
 
-Support Database
+Support Databases
 
 | Database   | Support                                                            |
 | ---------- | ------------------------------------------------------------------ |
