@@ -22,16 +22,21 @@ steps:
     - push
     - tag
     - pull-request
-    
+
 - name: coverage
   image: plugins/codecov
   settings:
-    token: 
+    token:
       from_secret: CODECOV_TOKEN
     files:
      - *.xml
     paths:
       - src/Horarium.Test/
+  when:
+    event:
+    - push
+    - tag
+    - pull-request
 
 - name: push
   image: mcr.microsoft.com/dotnet/core/sdk:2.2
