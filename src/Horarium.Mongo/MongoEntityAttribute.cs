@@ -1,6 +1,6 @@
 using System;
 
-namespace Horarium.MongoRepository
+namespace Horarium.Mongo
 {
     public class MongoEntityAttribute: Attribute
     {

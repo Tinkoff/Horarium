@@ -15,18 +15,12 @@ namespace Horarium
         private readonly IAdderJobs _adderJobs;
         private readonly IStatisticsJobs _statisticsJobs;
 
-        public HorariumClient(string mongoConnectionString)
-            : this(mongoConnectionString, new HorariumSettings())
+        public HorariumClient(IJobRepository jobRepository):this(jobRepository, new HorariumSettings())
         {
         }
+        
 
-        public HorariumClient(string mongoConnectionString, HorariumSettings settings)
-            : this(settings, MongoRepositoryFactory.Create(mongoConnectionString))
-        {
-        }
-
-        public HorariumClient(HorariumSettings settings,
-            IJobRepository jobRepository)
+        public HorariumClient(IJobRepository jobRepository, HorariumSettings settings)
         {
             _settings = settings;
             _adderJobs = new AdderJobs(jobRepository, settings.JsonSerializerSettings);

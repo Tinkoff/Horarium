@@ -21,7 +21,7 @@ namespace Horarium.Handlers
         {
             var settings = new RecurrentJobSettingsMetadata(jobKey, jobType, cron);
 
-            await _jobRepository.AddRecurrentJobSettings(RecurrentJobSettings.CreatedRecurrentJobSettings(settings, _jsonSerializerSettings));
+            await _jobRepository.AddRecurrentJobSettings(RecurrentJobSettings.CreatedRecurrentJobSettings(settings));
         }
     }
 }

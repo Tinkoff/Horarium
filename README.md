@@ -9,12 +9,21 @@ Horarium is fully based on an asynchronous work model, it allows you to run hund
 
 Horarium supports .NET Core/netstandard 2.0 and .NET Framework 4.6.2 and later.
 
+Support Databases
+
+| Database   | Support                                                                 |
+| ---------- | ----------------------------------------------------------------------- |
+| MongoDB    | Yes                                                                     |
+| In Memory  | Not yet [#5](https://github.com/TinkoffCreditSystems/Horarium/issues/5) |
+| PostgreSQL | Not yet [#6](https://github.com/TinkoffCreditSystems/Horarium/issues/6) |
+
 ## Getting started
 
 Add nuget-package Horarium
 
 ```bash
 dotnet add package Horarium
+dotnet add package Horarium.Mongo
 ```
 
 Add job that implements interface ```IJob<T>```
@@ -33,7 +42,7 @@ Add job that implements interface ```IJob<T>```
 Create ```HorariumServer``` and schedule ```TestJob```
 
 ```csharp
-var horarium = new HorariumServer("mongodb://localhost:27017/horarium");
+var horarium = new HorariumServer(MongoRepositoryFactory.Create("mongodb://localhost:27017/horarium"));
 await horarium.Create<TestJob, int>(666)
         .Schedule();
 ```
@@ -44,31 +53,31 @@ Create ```JobFactory```  for instantiating jobs with DI
 
 ```csharp
 public class JobFactory : IJobFactory
+{
+    private readonly IServiceProvider _serviceProvider;
+
+    public JobFactory(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public JobFactory(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
-        public object CreateJob(Type type)
-        {
-            return _serviceProvider.GetService(type);
-        }
-
-        public IDisposable BeginScope()
-        {
-            return _serviceProvider.CreateScope();
-        }
+        _serviceProvider = serviceProvider;
     }
+
+    public object CreateJob(Type type)
+    {
+        return _serviceProvider.GetService(type);
+    }
+
+    public IDisposable BeginScope()
+    {
+        return _serviceProvider.CreateScope();
+    }
+}
 ```
 
 Register Horarium in DI
 
 ```csharp
 services.AddSingleton<IHorarium>(serviceProvider =>
-                new HorariumServer("mongodb://localhost:27017/horarium",
+                new HorariumServer(MongoRepositoryFactory.Create("mongodb://localhost:27017/horarium"),
                     new HorariumSettings()
                     {
                         JobFactory = new JobFactory(serviceProvider)
@@ -79,23 +88,23 @@ Inject interface ```IHorarium``` into Controller
 
 ```csharp
 
-    private readonly IHorarium _horarium;
+private readonly IHorarium _horarium;
 
-    public HomeController(IHorarium horarium)
-    {
-        _horarium = horarium;
-    }
+public HomeController(IHorarium horarium)
+{
+    _horarium = horarium;
+}
 
-    [Route("api")]
-    public class HomeController : Controller
+[Route("api")]
+public class HomeController : Controller
+{
+    [HttpPost]
+    public async Task Run(int count)
     {
-        [HttpPost]
-        public async Task Run(int count)
-        {
             await _horarium.Create<TestJob, int>(count)
                           .Schedule();
-        }
     }
+}
 ```
 
 ## Create Recurrent Job

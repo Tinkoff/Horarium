@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Horarium.Mongo\Horarium.Mongo.csproj" />
     <ProjectReference Include="..\Horarium\Horarium.csproj" />
   </ItemGroup>
 </Project>

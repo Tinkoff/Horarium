@@ -4,9 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Horarium.IntegrationTest.Jobs;
 using Horarium.Interfaces;
-using Horarium.MongoRepository;
+using Horarium.Mongo;
 using Horarium.Repository;
-
 using Xunit;
 
 namespace Horarium.IntegrationTest
@@ -14,27 +13,41 @@ namespace Horarium.IntegrationTest
     [Collection(IntegrationTestCollection)]
     public class TestParallelsWorkTwoManagers : IntegrationTestBase
     {
-        
+        public enum DataBase
+        {
+            MongoDB
+        }
+
         public TestParallelsWorkTwoManagers()
         {
             var provider = new MongoClientProvider(ConnectionMongo);
-            var collection = provider.GetCollection<JobDb>();
+            var collection = provider.GetCollection<JobMongoModel>();
 
-            collection.DeleteMany(MongoDB.Driver.Builders<JobDb>.Filter.Empty);
+            collection.DeleteMany(MongoDB.Driver.Builders<JobMongoModel>.Filter.Empty);
         }
 
-        private IHorarium CreateScheduler()
+        private IHorarium CreateScheduler(DataBase dataBase)
         {
-            var scheduler = new HorariumServer(ConnectionMongo);
+            IJobRepository jobRepository;
 
-            return scheduler;
+            switch (dataBase)
+            {
+                case DataBase.MongoDB:
+                    jobRepository = MongoRepositoryFactory.Create(ConnectionMongo);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(dataBase), dataBase, null);
+            }
+
+            return new HorariumServer(jobRepository);
         }
 
-        [Fact]
-        public async Task TestParallels()
+        [Theory]
+        [InlineData(DataBase.MongoDB)]
+        public async Task TestParallels(DataBase dataBase)
         {
-            var firstScheduler = CreateScheduler();
-            var secondScheduler = CreateScheduler();
+            var firstScheduler = CreateScheduler(dataBase);
+            var secondScheduler = CreateScheduler(dataBase);
 
             for (var i = 0; i < 1000; i++)
             {
@@ -58,11 +71,12 @@ namespace Horarium.IntegrationTest
         /// т.к. для рекуррентных джобов одновременно может выполняться только один экземпляр
         /// </summary>
         /// <returns></returns>
-        [Fact]
-        public async Task Scheduler_SecondInstanceStart_MustUpdateRecurrentJobCronParameters()
+        [Theory]
+        [InlineData(DataBase.MongoDB)]
+        public async Task Scheduler_SecondInstanceStart_MustUpdateRecurrentJobCronParameters(DataBase dataBase)
         {
             var watch = Stopwatch.StartNew();
-            var scheduler = CreateScheduler();
+            var scheduler = CreateScheduler(dataBase);
 
             while (true)
             {
@@ -73,11 +87,11 @@ namespace Horarium.IntegrationTest
                     break;
                 }
             }
-            
+
             await Task.Delay(TimeSpan.FromSeconds(5));
-            
+
             scheduler.Dispose();
-            
+
             Assert.Single(TestRecurrentJob.StackJobs);
         }
     }
