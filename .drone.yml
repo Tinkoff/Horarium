@@ -29,7 +29,7 @@ steps:
     token:
       from_secret: CODECOV_TOKEN
     files:
-     - *.xml
+     - coverage.opencover.xml
     paths:
       - src/Horarium.Test/
   when:
