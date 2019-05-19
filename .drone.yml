@@ -15,13 +15,23 @@ steps:
   commands:
   - cd src
   - dotnet build Horarium.sln -c Release
-  - dotnet test Horarium.Test/Horarium.Test.csproj --no-restore
+  - dotnet test Horarium.Test/Horarium.Test.csproj --no-restore /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
   - dotnet test Horarium.IntegrationTest/Horarium.IntegrationTest.csproj --no-restore 
   when:
     event:
     - push
     - tag
     - pull-request
+    
+- name: coverage
+  image: plugins/codecov
+  settings:
+    token: 
+      from_secret: CODECOV_TOKEN
+    files:
+     - *.xml
+    paths:
+      - src/Horarium.Test/
 
 - name: push
   image: mcr.microsoft.com/dotnet/core/sdk:2.2
