@@ -1,6 +1,6 @@
 ﻿using MongoDB.Driver;
 
-namespace Horarium.MongoRepository
+namespace Horarium.Mongo
 {
     public interface IMongoClientProvider
     {

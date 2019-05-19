@@ -4,7 +4,7 @@ using System.Reflection;
 using Horarium.Repository;
 using MongoDB.Driver;
 
-namespace Horarium.MongoRepository
+namespace Horarium.Mongo
 {
     public sealed class MongoClientProvider : IMongoClientProvider
     {
@@ -39,31 +39,39 @@ namespace Horarium.MongoRepository
 
         private void CreateIndexes()
         {
-            var issueCollection = GetCollection<JobDb>();
+            var indexKeyBuilder = Builders<JobMongoModel>.IndexKeys;
 
-            issueCollection.Indexes.CreateOne(Builders<JobDb>.IndexKeys
-                .Ascending(x => x.Status)
-                .Ascending(x=>x.StartAt)
-                .Ascending(x=>x.StartedExecuting),
-                new CreateIndexOptions
-                {
-                    Background = true
-                });
+            var collection = GetCollection<JobMongoModel>();
 
-            issueCollection.Indexes.CreateOne(Builders<JobDb>.IndexKeys
-                    .Ascending(x => x.Status)
-                    .Ascending(x => x.JobKey),
-                new CreateIndexOptions
-                {
-                    Background = true
-                });
-
-            issueCollection.Indexes.CreateOne(Builders<JobDb>.IndexKeys
-                    .Ascending(x => x.JobKey),
-                new CreateIndexOptions
-                {
-                    Background = true
-                });
+            collection.Indexes.CreateMany(new[]
+            {
+                new CreateIndexModel<JobMongoModel>(
+                    indexKeyBuilder    
+                        .Ascending(x => x.Status)
+                        .Ascending(x=>x.StartAt)
+                        .Ascending(x=>x.StartedExecuting),
+                    new CreateIndexOptions
+                    {
+                        Background = true
+                    }),
+                
+                new CreateIndexModel<JobMongoModel>(
+                    indexKeyBuilder
+                        .Ascending(x => x.Status)
+                        .Ascending(x => x.JobKey),
+                    new CreateIndexOptions
+                    {
+                        Background = true
+                    }),
+                
+                new CreateIndexModel<JobMongoModel>(
+                    indexKeyBuilder
+                        .Ascending(x => x.JobKey),
+                    new CreateIndexOptions
+                    {
+                        Background = true
+                    })
+            });
         }
     }
 }

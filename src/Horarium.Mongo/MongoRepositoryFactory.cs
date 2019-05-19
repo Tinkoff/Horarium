@@ -1,8 +1,7 @@
 ﻿using System;
-using Horarium.MongoRepository;
 using Horarium.Repository;
 
-namespace Horarium
+namespace Horarium.Mongo
 {
     public static class MongoRepositoryFactory
     {
@@ -12,7 +11,7 @@ namespace Horarium
                 throw new ArgumentNullException($"Не указана строка подключения.");
 
             var provider = new MongoClientProvider(connectionString);
-            return new MongoRepository.MongoRepository(provider);
+            return new MongoRepository(provider);
         }
     }
 }

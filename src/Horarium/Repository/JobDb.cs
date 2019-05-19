@@ -1,13 +1,8 @@
 ﻿using System;
-using Horarium.MongoRepository;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.Options;
 using Newtonsoft.Json;
 
 namespace Horarium.Repository
 {
-    [MongoEntity("scheduler.jobs")]
     public class JobDb
     {
         public static JobDb CreatedJobDb(JobMetadata jobMetadata, JsonSerializerSettings jsonSerializerSettings)
@@ -31,8 +26,7 @@ namespace Horarium.Repository
                 ObsoleteInterval = jobMetadata.ObsoleteInterval
             };
         }
-
-        [BsonId]
+        
         public string JobId { get; set; }
 
         public string JobKey { get; set; }
@@ -60,8 +54,7 @@ namespace Horarium.Repository
         public string Cron { get; set; }
 
         public TimeSpan? Delay { get; set; }
-
-        [BsonTimeSpanOptions(BsonType.Int64, TimeSpanUnits.Milliseconds)]
+        
         public TimeSpan ObsoleteInterval { get; set; }
 
         public JobMetadata ToJob(JsonSerializerSettings jsonSerializerSettings)
