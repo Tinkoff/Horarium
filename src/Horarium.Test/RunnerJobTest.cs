@@ -90,7 +90,6 @@ namespace Horarium.Test
                 .ThrowsAsync(new Exception())
                 .ReturnsAsync(new JobDb());
 
-
             // Act
             runnerJobs.Start();
             await Task.Delay(settings.IntervalStartJob - TimeSpan.FromMilliseconds(500));

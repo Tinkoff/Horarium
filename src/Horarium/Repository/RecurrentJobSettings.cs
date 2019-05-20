@@ -1,5 +1,4 @@
-﻿
-namespace Horarium.Repository
+﻿namespace Horarium.Repository
 {
     public class RecurrentJobSettings
     {

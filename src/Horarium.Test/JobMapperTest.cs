@@ -29,8 +29,7 @@ namespace Horarium.Test
         [Fact]
         public void ToJob()
         {
-
-            var job = new JobDb()
+            var job = new JobDb
             {
                 JobType = _strJobType,
                 JobParamType = _strJobParamType,

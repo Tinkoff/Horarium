@@ -8,7 +8,6 @@ using Horarium.Repository;
 using Newtonsoft.Json;
 using Horarium.Builders.Recurrent;
 
-
 namespace Horarium.Handlers
 {
     public class ExecutorJob: IExecutorJob

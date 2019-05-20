@@ -39,12 +39,10 @@ namespace Horarium
             return $"0 {minute} {hour} * * *";
         }
 
-
         public static string Weekly()
         {
             return Weekly(DayOfWeek.Monday);
         }
-
 
         public static string Weekly(DayOfWeek dayOfWeek)
         {
@@ -61,30 +59,25 @@ namespace Horarium
             return $"0 {minute} {hour} * * {(int) dayOfWeek}";
         }
 
-
         public static string Monthly()
         {
             return Monthly(day: 1);
         }
-
 
         public static string Monthly(int day)
         {
             return Monthly(day, hour: 0);
         }
 
-
         public static string Monthly(int day, int hour)
         {
             return Monthly(day, hour, minute: 0);
         }
 
-
         public static string Monthly(int day, int hour, int minute)
         {
             return $"0 {minute} {hour} {day}  * *";
         }
-
 
         public static string MinuteInterval(int interval)
         {
@@ -111,5 +104,4 @@ namespace Horarium
             return $"*/{interval} * * * * *";
         }
     }
-
 }

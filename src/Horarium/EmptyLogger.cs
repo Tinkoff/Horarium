@@ -7,22 +7,18 @@ namespace Horarium
     {
         public void Debug(string msg)
         {
-            
         }
 
         public void Debug(Exception ex)
         {
-
         }
 
         public void Error(Exception ex)
         {
-            
         }
 
         public void Error(string message, Exception ex)
         {
-
         }
     }
 }

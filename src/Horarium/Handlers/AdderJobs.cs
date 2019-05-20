@@ -25,7 +25,6 @@ namespace Horarium.Handlers
             return _jobRepository.AddJob(job);
         }
 
-
         public async Task AddRecurrentJob(JobMetadata jobMetadata)
         {
             await _recurrentJobSettingsAdder.Add(jobMetadata.Cron, jobMetadata.JobType, jobMetadata.JobKey);
