@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Horarium.Builders.Recurrent;
 using Horarium.Builders.Parameterized;
-using Horarium.Repository;
 
 namespace Horarium.Interfaces
 {

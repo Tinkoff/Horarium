@@ -76,7 +76,6 @@ namespace Horarium.Handlers
             }
         }
 
-
         private async Task<JobMetadata> GetReadyJob()
         {
             try

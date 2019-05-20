@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Reflection;
-using Horarium.Repository;
 using MongoDB.Driver;
 
 namespace Horarium.Mongo
