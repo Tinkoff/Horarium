@@ -39,7 +39,10 @@ namespace Horarium.IntegrationTest
                     throw new ArgumentOutOfRangeException(nameof(dataBase), dataBase, null);
             }
 
-            return new HorariumServer(jobRepository);
+            var horarium = new HorariumServer(jobRepository);
+            horarium.Start();
+            
+            return horarium;
         }
 
         [Theory]
