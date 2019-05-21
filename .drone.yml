@@ -39,6 +39,8 @@ steps:
   when:
     event:
     - tag
+    branch:
+    - master
 
 
 services:
@@ -49,8 +51,6 @@ services:
   - 27017
 
 trigger:
-  branch:
-  - master
   event:
   - push
   - tag
