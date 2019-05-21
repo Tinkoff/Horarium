@@ -52,7 +52,7 @@ trigger:
   branch:
   - master
   event:
-    - push
-    - tag
-    - pull-request
+  - push
+  - tag
+  - pull-request
 
