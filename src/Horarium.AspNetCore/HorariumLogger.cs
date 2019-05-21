@@ -20,17 +20,17 @@ namespace Horarium.AspNetCore
 
         public void Debug(Exception ex)
         {
-            _logger.LogDebug(ex.Message + ex.StackTrace);
+            _logger.LogDebug(ex.Message, ex);
         }
 
         public void Error(Exception ex)
         {
-            _logger.LogWarning(ex.Message + ex.StackTrace);
+            _logger.LogError(ex.Message, ex);
         }
 
         public void Error(string message, Exception ex)
         {
-            _logger.LogWarning(message + ex.Message + ex.StackTrace);
+            _logger.LogError(message, ex);
         }
     }
 }
