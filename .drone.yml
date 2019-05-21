@@ -29,7 +29,7 @@ steps:
 - name: push
   image: mcr.microsoft.com/dotnet/core/sdk:2.2
   environment:
-    NUGET_APIKEY: 
+    NUGET_APIKEY:
       from_secret: NUGET_APIKEY
   commands:
   - cd src

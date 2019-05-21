@@ -86,7 +86,6 @@ namespace Horarium.Mongo
                     IsUpsert = true
                 });
         }
-        
 
         public async Task<string> GetCronForRecurrentJob(string jobKey)
         {

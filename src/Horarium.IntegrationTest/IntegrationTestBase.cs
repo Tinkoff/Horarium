@@ -1,5 +1,3 @@
-
-
 using System;
 
 namespace Horarium.IntegrationTest
@@ -12,6 +10,5 @@ namespace Horarium.IntegrationTest
         protected readonly string ConnectionMongo =
             $"mongodb://{Environment.GetEnvironmentVariable("MONGO_ADDRESS")??"localhost"}:27017/{DatabaseNameMongo}";
 
-        
     }
 }

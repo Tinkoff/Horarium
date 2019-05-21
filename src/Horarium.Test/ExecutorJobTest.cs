@@ -36,7 +36,7 @@ namespace Horarium.Test
             jobRepositoryMock.Verify(x =>
                 x.RepeatJob(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<NotImplementedException>()));
         }
-        
+
         [Fact]
         public async Task ExceptionCreateJob_LoggingError()
         {
@@ -88,6 +88,7 @@ namespace Horarium.Test
 
             Assert.True(job.FailedEventCalled);
         }
+
         [Fact]
         public async Task ExceptionInJob_SaveError_WhenNotAllRepeatesIsFailed()
         {
@@ -119,7 +120,7 @@ namespace Horarium.Test
         {
             var jobRepositoryMock = new Mock<IJobRepository>();
             var jobFactoryMock = new Mock<IJobFactory>();
-            
+
             const string cron = "*/15 * * * * *";
 
             jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
@@ -151,7 +152,7 @@ namespace Horarium.Test
             var jobRepositoryMock = new Mock<IJobRepository>();
             var jobFactoryMock = new Mock<IJobFactory>();
             var jobAdderJob = new Mock<IAdderJobs>();
-            
+
             const string cron = "*/15 * * * * *";
 
             jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
@@ -183,7 +184,7 @@ namespace Horarium.Test
                                                                               j.JobKey == job.JobKey &&
                                                                               j.Cron == job.Cron)));
         }
-        
+
         [Fact]
         public async Task RecurrentJob_ExceptionCreateJob_LoggingError()
         {
@@ -193,12 +194,11 @@ namespace Horarium.Test
             var jobRepositoryMock = new Mock<IJobRepository>();
 
             const string cron = "*/15 * * * * *";
-            
+
             jobRepositoryMock.Setup(x => x.GetCronForRecurrentJob(It.IsAny<string>()))
                 .ReturnsAsync(cron);
             jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Throws<Exception>();
-            
 
             var executorJob = new ExecutorJob(jobFactoryMock.Object,
                 jobLoggingMock.Object,

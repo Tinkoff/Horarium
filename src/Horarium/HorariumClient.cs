@@ -19,7 +19,6 @@ namespace Horarium
         {
         }
         
-
         public HorariumClient(IJobRepository jobRepository, HorariumSettings settings)
         {
             _settings = settings;
