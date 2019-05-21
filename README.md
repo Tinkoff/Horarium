@@ -5,7 +5,6 @@
 [![codecov](https://codecov.io/gh/TinkoffCreditSystems/Horarium/branch/master/graph/badge.svg)](https://codecov.io/gh/TinkoffCreditSystems/Horarium)
 [![codecov](https://www.codefactor.io/repository/github/tinkoffcreditsystems/horarium/badge)](https://www.codefactor.io/repository/github/tinkoffcreditsystems/horarium)
 
-
 Horarium is an open source job scheduling .NET library with an easy to use API, that can be integrated within applications of any scale - from the smallest stand-alone application to the largest e-commerce system.
 
 Horarium is fully based on an asynchronous work model, it allows you to run hundreds of parallel jobs within a single application instance. It supports jobs execution in distributed systems and uses MongoDB as a synchronization backend.
@@ -46,45 +45,39 @@ Create ```HorariumServer``` and schedule ```TestJob```
 
 ```csharp
 var horarium = new HorariumServer(MongoRepositoryFactory.Create("mongodb://localhost:27017/horarium"));
+horarium.Start();
 await horarium.Create<TestJob, int>(666)
         .Schedule();
 ```
 
 ## Add to ```Asp.Net core``` application
 
-Create ```JobFactory```  for instantiating jobs with DI
+Add nuget-package Horarium.AspNetCore
+
+```bash
+dotnet add package Horarium.AspNetCore
+```
+
+Add  ```Horarium```  in Asp.NET Core DI
 
 ```csharp
-public class JobFactory : IJobFactory
+public void ConfigureServices(IServiceCollection services)
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public JobFactory(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
-    public object CreateJob(Type type)
-    {
-        return _serviceProvider.GetService(type);
-    }
-
-    public IDisposable BeginScope()
-    {
-        return _serviceProvider.CreateScope();
-    }
+//...
+service.AddHorariumServer(MongoRepositoryFactory.Create("mongodb://localhost:27017/horarium"));
+//...
 }
 ```
 
-Register Horarium in DI
+Start HorariumServer in Asp.NET Core application
 
 ```csharp
-services.AddSingleton<IHorarium>(serviceProvider =>
-                new HorariumServer(MongoRepositoryFactory.Create("mongodb://localhost:27017/horarium"),
-                    new HorariumSettings()
-                    {
-                        JobFactory = new JobFactory(serviceProvider)
-                    });)
+public void Configure(IApplicationBuilder app)
+{
+//...
+app.ApplicationServices.StartHorariumServer();
+//...
+}
 ```
 
 Inject interface ```IHorarium``` into Controller
