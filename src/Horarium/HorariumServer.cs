@@ -29,10 +29,9 @@ namespace Horarium
             _settings = settings;
             _adderJobs = new AdderJobs(jobRepository, _settings.JsonSerializerSettings);
             _jobRepository = jobRepository;
-            Start();
         }
 
-        private void Start()
+        public void Start()
         {
             var executorJob = new ExecutorJob(_settings.JobFactory, _settings.Logger, _jobRepository, _adderJobs,
                 _settings.JsonSerializerSettings);
@@ -42,9 +41,14 @@ namespace Horarium
             _runnerJobs.Start();
         }
 
-        public new void Dispose()
+        public void Stop()
         {
             _runnerJobs.Stop().Wait(_timeoutStop);
+        }
+
+        public new void Dispose()
+        {
+            Stop();
         }
     }
 }

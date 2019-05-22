@@ -16,12 +16,7 @@ steps:
   - cd src
   - dotnet build Horarium.sln -c Release
   - dotnet test Horarium.Test/Horarium.Test.csproj --no-restore /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-  - dotnet test Horarium.IntegrationTest/Horarium.IntegrationTest.csproj --no-restore
-  when:
-    event:
-    - push
-    - tag
-    - pull-request
+  - dotnet test Horarium.IntegrationTest/Horarium.IntegrationTest.csproj --no-restore 
 
 - name: coverage
   image: plugins/codecov
@@ -30,11 +25,6 @@ steps:
       from_secret: CODECOV_TOKEN
     files:
      -  src/Horarium.Test/coverage.opencover.xml
-  when:
-    event:
-    - push
-    - tag
-    - pull-request
 
 - name: push
   image: mcr.microsoft.com/dotnet/core/sdk:2.2
@@ -49,6 +39,8 @@ steps:
   when:
     event:
     - tag
+    branch:
+    - master
 
 
 services:
@@ -57,3 +49,11 @@ services:
   command: [ --smallfiles ]
   ports:
   - 27017
+
+trigger:
+  event:
+  - pull-request
+  - push
+  - tag
+
+
