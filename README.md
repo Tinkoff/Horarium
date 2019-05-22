@@ -64,7 +64,7 @@ Add  ```Horarium```  in Asp.NET Core DI
 public void ConfigureServices(IServiceCollection services)
 {
 //...
-service.AddHorariumServer(MongoRepositoryFactory.Create("mongodb://localhost:27017/horarium"));
+services.AddHorariumServer(MongoRepositoryFactory.Create("mongodb://localhost:27017/horarium"));
 //...
 }
 ```
