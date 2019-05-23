@@ -31,14 +31,14 @@ dotnet add package Horarium.Mongo
 Add job that implements interface ```IJob<T>```
 
 ```csharp
-    public class TestJob : IJob<int>
+public class TestJob : IJob<int>
+{
+    public async Task Execute(int param)
     {
-        public async Task Execute(int param)
-        {
-            Console.WriteLine(param);
-            await Task.Run(() => { });
-        }
+        Console.WriteLine(param);
+        await Task.Run(() => { });
     }
+}
 ```
 
 Create ```HorariumServer``` and schedule ```TestJob```
