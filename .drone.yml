@@ -35,6 +35,7 @@ steps:
   - cd src
   - dotnet pack Horarium/Horarium.csproj -c Release  /p:PackageVersion=$DRONE_TAG
   - dotnet pack Horarium.Mongo/Horarium.Mongo.csproj -c Release  /p:PackageVersion=$DRONE_TAG
+  - dotnet pack Horarium.AspNetCore/Horarium.AspNetCore.csproj -c Release  /p:PackageVersion=$DRONE_TAG
   - dotnet nuget push **/Horarium.*.nupkg -k $NUGET_APIKEY -s https://www.nuget.org
   when:
     event:
