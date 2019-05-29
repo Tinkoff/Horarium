@@ -1,5 +1,6 @@
 ﻿using System;
 using Horarium.Repository;
+using MongoDB.Driver;
 
 namespace Horarium.Mongo
 {
@@ -8,9 +9,18 @@ namespace Horarium.Mongo
         public static IJobRepository Create(string connectionString)
         {
             if (string.IsNullOrEmpty(connectionString))
-                throw new ArgumentNullException($"Не указана строка подключения.");
+                throw new ArgumentNullException("Connections string is empty");
 
             var provider = new MongoClientProvider(connectionString);
+            return new MongoRepository(provider);
+        }
+        
+        public static IJobRepository Create(MongoUrl mongoUrl)
+        {
+            if (mongoUrl == null)
+                throw new ArgumentNullException("Connections string is empty");
+
+            var provider = new MongoClientProvider(mongoUrl);
             return new MongoRepository(provider);
         }
     }

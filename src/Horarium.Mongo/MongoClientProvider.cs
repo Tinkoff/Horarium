@@ -12,12 +12,15 @@ namespace Horarium.Mongo
         private readonly Lazy<MongoClient> _mongoClient;
         private readonly string _databaseName;
 
-        public MongoClientProvider(string mongoConnectionString)
+        public MongoClientProvider(MongoUrl mongoUrl)
         {
-            var mongoUrl = new MongoUrl(mongoConnectionString);
             _databaseName = mongoUrl.DatabaseName;
             _mongoClient = new Lazy<MongoClient>(() => new MongoClient(mongoUrl));
             CreateIndexes();
+        }
+        
+        public MongoClientProvider(string mongoConnectionString): this (new MongoUrl(mongoConnectionString))
+        {
         }
 
         private string GetCollectionName(Type entityType)
