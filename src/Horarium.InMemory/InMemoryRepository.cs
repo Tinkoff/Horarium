@@ -35,7 +35,8 @@ namespace Horarium.InMemory
 
         public Task AddJob(JobDb job)
         {
-            _jobsStorage.TryAdd(job.JobId, JobInMemoryWrapper.CreateJobInMemoryWrapper(job));
+            var wrappedJob = JobInMemoryWrapper.CreateJobInMemoryWrapper(job);
+            _jobsStorage.AddOrUpdate(job.JobId, wrappedJob, (_, __) => wrappedJob);
 
             return Task.CompletedTask;
         }
@@ -100,7 +101,7 @@ namespace Horarium.InMemory
         public Task AddRecurrentJobSettings(RecurrentJobSettings settings)
         {
             _recurrentJobSettingsStorage.AddOrUpdate(settings.JobKey, settings, 
-                (s, jobSettings) => settings);
+                (_, __) => settings);
             
             return Task.CompletedTask;
         }
