@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Horarium.Repository;
 
@@ -8,8 +9,8 @@ namespace Horarium.InMemory
 {
     public class InMemoryRepository : IJobRepository
     {   
-        private readonly ConcurrentDictionary<string, JobInMemoryModel> _jobsStorage = 
-            new ConcurrentDictionary<string, JobInMemoryModel>();
+        private readonly ConcurrentDictionary<string, JobInMemoryWrapper> _jobsStorage = 
+            new ConcurrentDictionary<string, JobInMemoryWrapper>();
         
         private readonly ConcurrentDictionary<string, RecurrentJobSettings> _recurrentJobSettingsStorage = 
             new ConcurrentDictionary<string, RecurrentJobSettings>();
@@ -34,7 +35,7 @@ namespace Horarium.InMemory
 
         public Task AddJob(JobDb job)
         {
-            _jobsStorage.TryAdd(job.JobId, JobInMemoryModel.CreateJobInMemoryModel(job));
+            _jobsStorage.TryAdd(job.JobId, JobInMemoryWrapper.CreateJobInMemoryWrapper(job));
 
             return Task.CompletedTask;
         }
@@ -90,7 +91,7 @@ namespace Horarium.InMemory
             var result = UpdateOneAtomic(Filter, Update);
             if (result != null) return Task.CompletedTask;
 
-            var copy = JobInMemoryModel.CopyJob(job);
+            var copy = JobInMemoryWrapper.CopyJob(job);
             Update(copy);
             
             return AddJob(copy);
@@ -114,7 +115,17 @@ namespace Horarium.InMemory
 
         public Task<Dictionary<JobStatus, int>> GetJobStatistic()
         {
-            var dict = new Dictionary<JobStatus, int>();
+            var dict = _jobsStorage.Values.Select(x => x.Job)
+                .GroupBy(x => x.Status)
+                .ToDictionary(x => x.Key, g => g.Sum(x => 1));
+            
+            foreach (JobStatus jobStatus in Enum.GetValues(typeof(JobStatus)))
+            {
+                if (!dict.ContainsKey(jobStatus))
+                {
+                    dict.Add(jobStatus, 0);
+                }
+            }
 
             return Task.FromResult(dict);
         }
@@ -132,7 +143,7 @@ namespace Horarium.InMemory
                         if (filter(jobWrapper.Job))
                         {
                             update(jobWrapper.Job);
-                            return JobInMemoryModel.CopyJob(jobWrapper.Job);
+                            return JobInMemoryWrapper.CopyJob(jobWrapper.Job);
                         }
                     }
                 }

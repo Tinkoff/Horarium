@@ -2,15 +2,15 @@ using Horarium.Repository;
 
 namespace Horarium.InMemory
 {
-    internal class JobInMemoryModel
+    internal class JobInMemoryWrapper
     {
         public object SyncRoot { get; set; }
 
         public JobDb Job { get; set; }
 
-        public static JobInMemoryModel CreateJobInMemoryModel(JobDb job)
+        public static JobInMemoryWrapper CreateJobInMemoryWrapper(JobDb job)
         {
-            return new JobInMemoryModel
+            return new JobInMemoryWrapper
             {
                 SyncRoot = new object(),
                 Job = CopyJob(job)
