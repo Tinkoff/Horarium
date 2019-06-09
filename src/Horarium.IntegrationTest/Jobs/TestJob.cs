@@ -20,11 +20,4 @@ namespace Horarium.IntegrationTest.Jobs
             await Task.Delay(30);
         }
     }
-
-    public class TestJobParam
-    {
-        public int Counter { get; set; }
-
-        public TestParallelsWorkTwoManagers.DataBase DbType { get; set; }
-    }
 }
