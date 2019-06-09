@@ -51,7 +51,7 @@ services:
 
 trigger:
   event:
-  - pull-request
+  - pull_request
   - push
   - tag
 
