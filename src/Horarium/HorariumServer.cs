@@ -33,7 +33,7 @@ namespace Horarium
 
         public void Start()
         {
-            var executorJob = new ExecutorJob(_settings.JobFactory, _settings.Logger, _jobRepository, _adderJobs,
+            var executorJob = new ExecutorJob(_settings.JobScopeFactory, _settings.Logger, _jobRepository, _adderJobs,
                 _settings.JsonSerializerSettings);
 
             _runnerJobs = new RunnerJobs(_jobRepository, _settings, _settings.JsonSerializerSettings, _settings.Logger,

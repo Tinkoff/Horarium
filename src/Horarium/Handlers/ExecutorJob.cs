@@ -12,7 +12,7 @@ namespace Horarium.Handlers
 {
     public class ExecutorJob: IExecutorJob
     {
-        private readonly IJobFactory _jobFactory;
+        private readonly IJobScopeFactory _jobScopeFactory;
         private readonly IHorariumLogger _horariumLogger;
         private readonly IJobRepository _jobRepository;
         private readonly IAdderJobs _adderJobs;
@@ -20,13 +20,13 @@ namespace Horarium.Handlers
         private readonly int _increaseRepeat = 10;
         private readonly JsonSerializerSettings _jsonSerializerSettings;
 
-        public ExecutorJob(IJobFactory jobFactory, 
+        public ExecutorJob(IJobScopeFactory jobScopeFactory, 
             IHorariumLogger horariumLogger, 
             IJobRepository jobRepository, 
             IAdderJobs adderJobs, 
             JsonSerializerSettings jsonSerializerSettings)
         {
-            _jobFactory = jobFactory;
+            _jobScopeFactory = jobScopeFactory;
             _horariumLogger = horariumLogger;
             _jobRepository = jobRepository;
             _adderJobs = adderJobs;
@@ -49,11 +49,11 @@ namespace Horarium.Handlers
 
             try
             {
-                using (_jobFactory.BeginScope())
+                using (var scope = _jobScopeFactory.Create())
                 {
                     try
                     {
-                        jobImplementation = _jobFactory.CreateJob(jobMetadata.JobType);
+                        jobImplementation = scope.CreateJob(jobMetadata.JobType);
                     }
                     catch (Exception ex)
                     {
@@ -92,12 +92,12 @@ namespace Horarium.Handlers
         {
             try
             {
-                using (_jobFactory.BeginScope())
+                using (var scope = _jobScopeFactory.Create())
                 {
                     dynamic jobImplementation;
                     try
                     {
-                        jobImplementation = _jobFactory.CreateJob(jobMetadata.JobType);
+                        jobImplementation = scope.CreateJob(jobMetadata.JobType);
                     }
                     catch (Exception ex)
                     {
