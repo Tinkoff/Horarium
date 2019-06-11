@@ -5,26 +5,29 @@ using Horarium.Repository;
 
 namespace Horarium.InMemory.PerformantInMemory.Indexes
 {
-    public class ReadyJobIndex
+    public class ReadyJobIndex : IAddRemoveIndex
     {
         private readonly SortedSet<JobDb> _startAtIndex = new SortedSet<JobDb>(new StartAtComparer());
-
-        private readonly Dictionary<string, SortedSet<JobDb>> _jobKeyIndex = new Dictionary<string, SortedSet<JobDb>>();
+        
+        private readonly JobKeyIndex _jobKeyIndex = new JobKeyIndex();
 
         public void Add(JobDb job)
         {
+            if (job.Status != JobStatus.Ready) return;
+            
             _startAtIndex.Add(job);
-
-            if (!_jobKeyIndex.ContainsKey(job.JobKey))
-                _jobKeyIndex[job.JobKey] = new SortedSet<JobDb>(new JobIdComparer()) {job};
-            else
-                _jobKeyIndex[job.JobKey].Add(job);
+            _jobKeyIndex.Add(job);
         }
 
         public void Remove(JobDb job)
         {
             _startAtIndex.Remove(job);
-            _jobKeyIndex[job.JobKey].Remove(job);
+            _jobKeyIndex.Remove(job);
+        }
+
+        public int Count()
+        {
+            return _startAtIndex.Count;
         }
 
         public JobDb GetStartAtLessThan(DateTime startAt)
@@ -37,11 +40,7 @@ namespace Horarium.InMemory.PerformantInMemory.Indexes
 
         public JobDb GetJobKeyEqual(string jobKey)
         {
-            if (!_jobKeyIndex.TryGetValue(jobKey, out var index)) return null;
-
-            if (index.Count != 0) return index.Min;
-            
-            return null;
+            return _jobKeyIndex.Get(jobKey);
         }
     }
 }

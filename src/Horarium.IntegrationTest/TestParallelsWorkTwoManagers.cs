@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Horarium.InMemory;
+using Horarium.InMemory.PerformantInMemory;
 using Horarium.IntegrationTest.Jobs;
 using Horarium.Interfaces;
 using Horarium.Mongo;
@@ -17,7 +18,8 @@ namespace Horarium.IntegrationTest
         public enum DataBase
         {
             MongoDB,
-            InMemory
+            InMemory,
+            PerformantInMemory
         }
 
         public TestParallelsWorkTwoManagers()
@@ -42,6 +44,10 @@ namespace Horarium.IntegrationTest
                     jobRepository = InMemoryRepositoryFactory.Create();
                     break;
                 
+                case DataBase.PerformantInMemory:
+                    jobRepository = new PerformantInMemoryRepository();
+                    break;
+                
                 default:
                     throw new ArgumentOutOfRangeException(nameof(dataBase), dataBase, null);
             }
@@ -52,9 +58,34 @@ namespace Horarium.IntegrationTest
             return horarium;
         }
 
+        [Fact]
+        public async Task Test123()
+        {
+            var repository = new PerformantInMemoryRepository();
+            var client = new HorariumClient(repository);
+
+            await client.Create<TestJob, TestJobParam>(new TestJobParam
+            {
+                Counter = 123,
+                DbType = DataBase.PerformantInMemory
+            }).Schedule();
+
+            try
+            {
+                var job = await repository.GetReadyJob("we", TimeSpan.FromSeconds(10));
+            }
+            catch (Exception e)
+            {
+                var c = 4;
+            }
+
+            var a = 5;
+        }
+
         [Theory]
-        [InlineData(DataBase.MongoDB)]
-        [InlineData(DataBase.InMemory)]
+        //[InlineData(DataBase.MongoDB)]
+        //[InlineData(DataBase.InMemory)]
+        [InlineData(DataBase.PerformantInMemory)]
         public async Task TestParallels(DataBase dataBase)
         {
             var firstScheduler = CreateScheduler(dataBase);
@@ -87,7 +118,7 @@ namespace Horarium.IntegrationTest
         /// </summary>
         /// <returns></returns>
         [Theory]
-        [InlineData(DataBase.MongoDB)]
+        //[InlineData(DataBase.MongoDB)]
         
         /*
          * We need a better way of tracking jobs execution than some static ConcurrentStacks -
@@ -99,6 +130,7 @@ namespace Horarium.IntegrationTest
          * synchronization of shared static resources becomes VERY problematic
          */ 
         //[InlineData(DataBase.InMemory)]
+        [InlineData(DataBase.PerformantInMemory)]
         public async Task Scheduler_SecondInstanceStart_MustUpdateRecurrentJobCronParameters(DataBase dataBase)
         {
             var watch = Stopwatch.StartNew();

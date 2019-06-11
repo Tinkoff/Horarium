@@ -11,7 +11,8 @@ namespace Horarium.IntegrationTest.Jobs
             new Dictionary<TestParallelsWorkTwoManagers.DataBase, ConcurrentStack<int>>
             {
                 {TestParallelsWorkTwoManagers.DataBase.InMemory, new ConcurrentStack<int>()},
-                {TestParallelsWorkTwoManagers.DataBase.MongoDB, new ConcurrentStack<int>()}
+                {TestParallelsWorkTwoManagers.DataBase.MongoDB, new ConcurrentStack<int>()},
+                {TestParallelsWorkTwoManagers.DataBase.PerformantInMemory, new ConcurrentStack<int>()}
             };
 
         public async Task Execute(TestJobParam param)
