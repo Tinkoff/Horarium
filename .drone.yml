@@ -16,7 +16,7 @@ steps:
   - cd src
   - dotnet build Horarium.sln -c Release
   - dotnet test Horarium.Test/Horarium.Test.csproj --no-restore /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-  - dotnet test Horarium.IntegrationTest/Horarium.IntegrationTest.csproj --no-restore 
+  - DataBase=MongoDB dotnet test Horarium.IntegrationTest/Horarium.IntegrationTest.csproj --no-restore 
 
 - name: coverage
   image: plugins/codecov
