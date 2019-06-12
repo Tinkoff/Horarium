@@ -22,8 +22,8 @@ namespace Horarium
             : this(jobRepository, new HorariumSettings())
         {
         }
-        
-        public HorariumServer( IJobRepository jobRepository, HorariumSettings settings)
+
+        public HorariumServer(IJobRepository jobRepository, HorariumSettings settings)
             : base(jobRepository, settings)
         {
             _settings = settings;
@@ -33,8 +33,7 @@ namespace Horarium
 
         public void Start()
         {
-            var executorJob = new ExecutorJob(_settings.JobFactory, _settings.Logger, _jobRepository, _adderJobs,
-                _settings.JsonSerializerSettings);
+            var executorJob = new ExecutorJob(_jobRepository, _adderJobs, _settings);
 
             _runnerJobs = new RunnerJobs(_jobRepository, _settings, _settings.JsonSerializerSettings, _settings.Logger,
                 executorJob);

@@ -29,6 +29,8 @@ namespace Horarium.Test.Builders
 
             // Assert
             Assert.Equal(scheduledJob.StartAt, DateTime.UtcNow, TimeSpan.FromMilliseconds(500));
+            Assert.Null(scheduledJob.RepeatStrategy);
+            Assert.Equal(0, scheduledJob.MaxRepeatCount);
             _jobsAdderMock.Verify(a => a.AddEnqueueJob(It.IsAny<JobMetadata>()), Times.Once);
             _jobsAdderMock.VerifyNoOtherCalls();
         }
@@ -99,6 +101,32 @@ namespace Horarium.Test.Builders
             Assert.Equal(thirdJob.Delay, thirdJobDelay);
             Assert.Null(thirdJob.NextJob);
 
+            _jobsAdderMock.Verify(a => a.AddEnqueueJob(It.IsAny<JobMetadata>()), Times.Once);
+            _jobsAdderMock.VerifyNoOtherCalls();
+        }
+        
+        [Fact]
+        public async Task Schedule_SetFailedStrategy_SaveInJobMetadata()
+        {
+            // Arrange
+            var scheduledJob = new JobMetadata();
+            const int maxRepeatCount = 5;
+
+            var builder =
+                new ParameterizedJobBuilder<TestJob, string>(_jobsAdderMock.Object, "HALLO", _globalObsoleteInterval)
+                    .AddRepeatStrategy<DefaultRepeatStrategy>()
+                    .MaxRepeatCount(maxRepeatCount);
+
+            _jobsAdderMock.Setup(a => a.AddEnqueueJob(It.IsAny<JobMetadata>()))
+                .Returns(Task.CompletedTask)
+                .Callback((JobMetadata job) => scheduledJob = job);
+
+            // Act
+            await builder.Schedule();
+
+            // Assert
+            Assert.Equal(typeof(DefaultRepeatStrategy), scheduledJob.RepeatStrategy);
+            Assert.Equal(scheduledJob.MaxRepeatCount, maxRepeatCount);
             _jobsAdderMock.Verify(a => a.AddEnqueueJob(It.IsAny<JobMetadata>()), Times.Once);
             _jobsAdderMock.VerifyNoOtherCalls();
         }

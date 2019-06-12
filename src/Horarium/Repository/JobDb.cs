@@ -23,10 +23,12 @@ namespace Horarium.Repository
                     jobMetadata.NextJob != null ? CreatedJobDb(jobMetadata.NextJob, jsonSerializerSettings) : null,
                 Cron = jobMetadata.Cron,
                 Delay = jobMetadata.Delay,
-                ObsoleteInterval = jobMetadata.ObsoleteInterval
+                ObsoleteInterval = jobMetadata.ObsoleteInterval,
+                RepeatStrategy = jobMetadata.RepeatStrategy?.AssemblyQualifiedNameWithoutVersion(),
+                MaxRepeatCount = jobMetadata.MaxRepeatCount
             };
         }
-        
+
         public string JobId { get; set; }
 
         public string JobKey { get; set; }
@@ -54,8 +56,12 @@ namespace Horarium.Repository
         public string Cron { get; set; }
 
         public TimeSpan? Delay { get; set; }
-        
+
         public TimeSpan ObsoleteInterval { get; set; }
+
+        public string RepeatStrategy { get; set; }
+
+        public int MaxRepeatCount { get; set; }
 
         public JobMetadata ToJob(JsonSerializerSettings jsonSerializerSettings)
         {
@@ -73,7 +79,8 @@ namespace Horarium.Repository
                 NextJob = NextJob?.ToJob(jsonSerializerSettings),
                 Cron = Cron,
                 Delay = Delay,
-                ObsoleteInterval = ObsoleteInterval
+                ObsoleteInterval = ObsoleteInterval,
+                RepeatStrategy = string.IsNullOrEmpty(RepeatStrategy) ? null : Type.GetType(RepeatStrategy, true)
             };
         }
     }
