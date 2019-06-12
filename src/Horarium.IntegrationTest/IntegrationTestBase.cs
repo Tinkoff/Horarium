@@ -11,8 +11,7 @@ namespace Horarium.IntegrationTest
 
         private readonly string _connectionMongo =
             $"mongodb://{Environment.GetEnvironmentVariable("MONGO_ADDRESS") ?? "localhost"}:27017/{DatabaseNameMongo}";
-
-
+        
         protected HorariumServer CreateHorariumServer()
         {
             var dataBase = Environment.GetEnvironmentVariable("DataBase");
