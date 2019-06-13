@@ -3,7 +3,7 @@ using Horarium.Repository;
 
 namespace Horarium.InMemory.Indexes.Comparers
 {
-    public static class StaticJobIdComparer
+    internal static class StaticJobIdComparer
     {
         public static int Compare(JobDb x, JobDb y)
         {

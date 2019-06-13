@@ -3,7 +3,7 @@ using Horarium.Repository;
 
 namespace Horarium.InMemory.Indexes
 {
-    public class FailedJobIndex : IAddRemoveIndex
+    internal class FailedJobIndex : IAddRemoveIndex
     {
         private readonly Dictionary<string, JobDb> _index = new Dictionary<string, JobDb>();
         

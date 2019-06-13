@@ -5,7 +5,7 @@ using Horarium.Repository;
 
 namespace Horarium.InMemory
 {
-    public class JobsStorage
+    internal class JobsStorage
     {
         private readonly Dictionary<string, JobDb> _jobs = new Dictionary<string, JobDb>();
 

@@ -2,7 +2,7 @@ using Horarium.Repository;
 
 namespace Horarium.InMemory.Indexes
 {
-    public interface IAddRemoveIndex
+    internal interface IAddRemoveIndex
     {
         void Add(JobDb job);
 

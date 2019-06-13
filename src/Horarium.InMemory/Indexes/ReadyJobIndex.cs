@@ -5,7 +5,7 @@ using Horarium.Repository;
 
 namespace Horarium.InMemory.Indexes
 {
-    public class ReadyJobIndex : IAddRemoveIndex
+    internal class ReadyJobIndex : IAddRemoveIndex
     {
         private readonly SortedSet<JobDb> _startAtIndex = new SortedSet<JobDb>(new StartAtComparer());
         

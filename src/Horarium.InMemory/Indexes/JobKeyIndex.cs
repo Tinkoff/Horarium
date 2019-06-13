@@ -5,7 +5,7 @@ using Horarium.Repository;
 
 namespace Horarium.InMemory.Indexes
 {
-    public class JobKeyIndex : IAddRemoveIndex
+    internal class JobKeyIndex : IAddRemoveIndex
     {
         private readonly Dictionary<string, SortedSet<JobDb>> _index = new Dictionary<string, SortedSet<JobDb>>();
 
