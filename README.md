@@ -148,3 +148,62 @@ Horarium guarantees that a job would run **exactly once**
 ## Things to watch out for
 
 Every Horarium instance consults MongoDB about new jobs to run every 100ms (default), thus creating some load on the DB server. This interval can be changed in ```HorariumSettings```
+
+## Using Horarium with SimpleInjector
+
+To use Horarium with SimpleInjector one should implement its own `IJobFactory`, using `Container` from `SimpleInjector`. For example:
+```csharp
+public class SimpleInjectorJobScopeFactory : IJobScopeFactory
+{
+    private readonly Container _container;
+
+    public SimpleInjectorJobScopeFactory(Container container)
+    {
+        _container = container;
+    }
+
+    public IJobScope Create()
+    {
+        var scope = AsyncScopedLifestyle.BeginScope(_container);
+        return new SimpleInjectorJobScope(scope);
+    }
+}
+
+public class SimpleInjectorJobScope : IJobScope
+{
+    private readonly Scope _scope;
+
+    public SimpleInjectorJobScope(Scope scope)
+    {
+        _scope = scope;
+    }
+
+    public object CreateJob(Type type)
+    {
+        return _scope.GetInstance(type);
+    }
+
+    public void Dispose()
+    {
+        _scope.Dispose();
+    }
+}
+```
+
+Then add `HorariumServer` (or `HorariumClient`):
+```csharp
+container.RegisterSingleton<IHorarium>(() =>
+{
+    var settings = new HorariumSettings
+    {
+        JobScopeFactory = new SimpleInjectorJobScopeFactory(container),
+        Logger = new YourHorariumLogger()
+    };
+
+    return new HorariumServer(jobRepository, settings);
+});
+```
+In case of `HorariumServer`, don't forget to start it in your entypoint:
+```csharp
+((HorariumServer) container.GetInstance<IHorarium>()).Start();
+```

@@ -3,20 +3,20 @@ using Horarium.Interfaces;
 
 namespace Horarium
 {
-    public class DefaultJobFactory : IJobFactory
+    public class DefaultJobScopeFactory : IJobScopeFactory
     {
-        public object CreateJob(Type type)
+        public IJobScope Create()
         {
-            return Activator.CreateInstance(type);
+            return new DefaultJobScope();
         }
 
-        public IDisposable BeginScope()
+        public class DefaultJobScope : IJobScope
         {
-            return new Disposable();
-        }
+            public object CreateJob(Type type)
+            {
+                return Activator.CreateInstance(type);
+            }
 
-        private class Disposable : IDisposable
-        {
             public void Dispose()
             {
             }
