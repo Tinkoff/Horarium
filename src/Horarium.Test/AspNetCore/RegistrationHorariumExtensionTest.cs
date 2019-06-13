@@ -31,7 +31,7 @@ namespace Horarium.Test.AspNetCore
 
             Assert.Equal(ServiceLifetime.Singleton, descriptor.Lifetime);
             Assert.Equal(typeof(IHorarium), descriptor.ServiceType);
-            Assert.Equal(typeof(JobFactory), settings.JobFactory.GetType());
+            Assert.Equal(typeof(JobScopeFactory), settings.JobScopeFactory.GetType());
             Assert.Equal(typeof(HorariumLogger), settings.Logger.GetType());
             Assert.Equal(typeof(HorariumServer), horarium.GetType());
         }
@@ -57,7 +57,7 @@ namespace Horarium.Test.AspNetCore
 
             Assert.Equal(ServiceLifetime.Singleton, descriptor.Lifetime);
             Assert.Equal(typeof(IHorarium), descriptor.ServiceType);
-            Assert.Equal(typeof(JobFactory), settings.JobFactory.GetType());
+            Assert.Equal(typeof(JobScopeFactory), settings.JobScopeFactory.GetType());
             Assert.Equal(typeof(HorariumLogger), settings.Logger.GetType());
             Assert.Equal(typeof(HorariumClient), horarium.GetType());
         }
@@ -71,7 +71,7 @@ namespace Horarium.Test.AspNetCore
 
             var settings = new HorariumSettings
             {
-                JobFactory = new JobFactoryTest(),
+                JobScopeFactory = new JobScopeFactoryTest(),
                 Logger = new LoggerTest()
             };
 
@@ -81,7 +81,7 @@ namespace Horarium.Test.AspNetCore
             service.AddHorariumClient(Mock.Of<IJobRepository>(),
                 provider => settings);
 
-            Assert.Equal(typeof(JobFactoryTest), settings.JobFactory.GetType());
+            Assert.Equal(typeof(JobScopeFactoryTest), settings.JobScopeFactory.GetType());
             Assert.Equal(typeof(LoggerTest), settings.Logger.GetType());
         }
         
@@ -94,7 +94,7 @@ namespace Horarium.Test.AspNetCore
 
             var settings = new HorariumSettings
             {
-                JobFactory = new JobFactoryTest(),
+                JobScopeFactory = new JobScopeFactoryTest(),
                 Logger = new LoggerTest()
             };
 
@@ -104,18 +104,13 @@ namespace Horarium.Test.AspNetCore
             service.AddHorariumServer(Mock.Of<IJobRepository>(),
                 provider => settings);
 
-            Assert.Equal(typeof(JobFactoryTest), settings.JobFactory.GetType());
+            Assert.Equal(typeof(JobScopeFactoryTest), settings.JobScopeFactory.GetType());
             Assert.Equal(typeof(LoggerTest), settings.Logger.GetType());
         }
 
-        class JobFactoryTest : IJobFactory
+        class JobScopeFactoryTest : IJobScopeFactory
         {
-            public object CreateJob(Type type)
-            {
-                throw new NotImplementedException();
-            }
-
-            public IDisposable BeginScope()
+            public IJobScope Create()
             {
                 throw new NotImplementedException();
             }
