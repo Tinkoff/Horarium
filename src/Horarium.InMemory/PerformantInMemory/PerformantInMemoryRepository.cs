@@ -8,7 +8,7 @@ namespace Horarium.InMemory.PerformantInMemory
 {
     public class PerformantInMemoryRepository : IJobRepository
     {
-        private readonly object _syncRoot = new object();
+        private readonly OperationsProcessor _processor = new OperationsProcessor();
 
         private readonly JobsStorage _storage = new JobsStorage();
 
@@ -17,7 +17,7 @@ namespace Horarium.InMemory.PerformantInMemory
 
         public Task<JobDb> GetReadyJob(string machineName, TimeSpan obsoleteTime)
         {
-            lock (_syncRoot)
+            JobDb Query()
             {
                 var job = _storage.FindReadyJob(obsoleteTime);
                 if (job == null) return null;
@@ -31,26 +31,23 @@ namespace Horarium.InMemory.PerformantInMemory
 
                 _storage.Add(job);
 
-                return Task.FromResult(job);
+                return job;
             }
+
+            return _processor.Execute(Query);
         }
 
         public Task AddJob(JobDb job)
         {
-            lock (_syncRoot)
-            {
-                _storage.Add(job);
-            }
-
-            return Task.CompletedTask;
+            return _processor.Execute(() => _storage.Add(job));
         }
 
         public Task FailedJob(string jobId, Exception error)
         {
-            lock (_syncRoot)
+            void Command()
             {
                 var job = _storage.GetById(jobId);
-                if (job == null) return Task.CompletedTask;
+                if (job == null) return;
 
                 _storage.Remove(job);
 
@@ -60,25 +57,20 @@ namespace Horarium.InMemory.PerformantInMemory
                 _storage.Add(job);
             }
 
-            return Task.CompletedTask;
+            return _processor.Execute(Command);
         }
 
         public Task RemoveJob(string jobId)
         {
-            lock (_syncRoot)
-            {
-                _storage.Remove(jobId);
-            }
-
-            return Task.CompletedTask;
+            return _processor.Execute(() => _storage.Remove(jobId));
         }
 
         public Task RepeatJob(string jobId, DateTime startAt, Exception error)
         {
-            lock (_syncRoot)
-            {
+            void Command()
+            {    
                 var job = _storage.GetById(jobId);
-                if (job == null) return Task.CompletedTask;
+                if (job == null) return;
 
                 _storage.Remove(job);
 
@@ -89,12 +81,12 @@ namespace Horarium.InMemory.PerformantInMemory
                 _storage.Add(job);
             }
 
-            return Task.CompletedTask;
+            return _processor.Execute(Command);
         }
 
         public Task AddRecurrentJob(JobDb job)
         {
-            lock (_syncRoot)
+            void Command()
             {
                 var foundJob = _storage.FindRecurrentJobToUpdate(job.JobKey) ?? job;
 
@@ -106,7 +98,7 @@ namespace Horarium.InMemory.PerformantInMemory
                 _storage.Add(foundJob);
             }
 
-            return Task.CompletedTask;
+            return _processor.Execute(Command);
         }
 
         public Task AddRecurrentJobSettings(RecurrentJobSettings settings)
@@ -126,10 +118,7 @@ namespace Horarium.InMemory.PerformantInMemory
 
         public Task<Dictionary<JobStatus, int>> GetJobStatistic()
         {
-            lock (_syncRoot)
-            {
-                return Task.FromResult(_storage.GetStatistics());
-            }
+            return Task.FromResult(_storage.GetStatistics());
         }
     }
 }
