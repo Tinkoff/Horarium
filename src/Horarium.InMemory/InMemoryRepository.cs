@@ -6,7 +6,31 @@ using Horarium.Repository;
 
 namespace Horarium.InMemory
 {
-    public class PerformantInMemoryRepository : IJobRepository
+    internal static class JobDbExtension
+    {
+        public static JobDb Copy(this JobDb source)
+        {
+            return new JobDb
+            {
+                JobKey = source.JobKey,
+                JobId = source.JobId,
+                Status = source.Status,
+                JobType = source.JobType,
+                JobParamType = source.JobParamType,
+                JobParam = source.JobParam,
+                CountStarted = source.CountStarted,
+                StartedExecuting = source.StartedExecuting,
+                ExecutedMachine = source.ExecutedMachine,
+                StartAt = source.StartAt,
+                NextJob = source.NextJob?.Copy(),
+                Cron = source.Cron,
+                Delay = source.Delay,
+                ObsoleteInterval = source.ObsoleteInterval
+            };
+        }
+    }
+    
+    public class InMemoryRepository : IJobRepository
     {
         private readonly OperationsProcessor _processor = new OperationsProcessor();
 
@@ -39,7 +63,7 @@ namespace Horarium.InMemory
 
         public Task AddJob(JobDb job)
         {
-            return _processor.Execute(() => _storage.Add(job));
+            return _processor.Execute(() => _storage.Add(job.Copy()));
         }
 
         public Task FailedJob(string jobId, Exception error)
@@ -88,7 +112,7 @@ namespace Horarium.InMemory
         {
             void Command()
             {
-                var foundJob = _storage.FindRecurrentJobToUpdate(job.JobKey) ?? job;
+                var foundJob = _storage.FindRecurrentJobToUpdate(job.JobKey) ?? job.Copy();
 
                 _storage.Remove(foundJob);
 

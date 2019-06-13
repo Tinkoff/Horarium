@@ -39,7 +39,7 @@ namespace Horarium.IntegrationTest
                     break;
                 
                 case DataBase.InMemory:
-                    jobRepository = new PerformantInMemoryRepository();
+                    jobRepository = new InMemoryRepository();
                     break;
                 
                 default:
