@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Horarium.Repository;
 
-namespace Horarium.InMemory.PerformantInMemory.Indexes.Comparers
+namespace Horarium.InMemory.Indexes.Comparers
 {
     public class JobKeyComparer : IComparer<JobDb>
     {
@@ -10,7 +10,7 @@ namespace Horarium.InMemory.PerformantInMemory.Indexes.Comparers
         {
             var result = string.Compare(x.JobKey, y.JobKey, StringComparison.Ordinal);
             
-            return result == 0 ? FailoverComparer.Compare(x, y) : result;
+            return result == 0 ? StaticJobIdComparer.Compare(x, y) : result;
         }
     }
 }

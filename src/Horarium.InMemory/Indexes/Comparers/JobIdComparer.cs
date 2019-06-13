@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using Horarium.Repository;
 
-namespace Horarium.InMemory.PerformantInMemory.Indexes.Comparers
+namespace Horarium.InMemory.Indexes.Comparers
 {
     public class JobIdComparer : IComparer<JobDb>
     {
         public int Compare(JobDb x, JobDb y)
         {
-            return FailoverComparer.Compare(x, y);
+            return StaticJobIdComparer.Compare(x, y);
         }
     }
 }

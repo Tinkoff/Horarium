@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Horarium.InMemory.PerformantInMemory.Indexes.Comparers;
+using Horarium.InMemory.Indexes.Comparers;
 using Horarium.Repository;
 
-namespace Horarium.InMemory.PerformantInMemory.Indexes
+namespace Horarium.InMemory.Indexes
 {
     public class ExecutingJobIndex : IAddRemoveIndex
     {

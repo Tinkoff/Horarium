@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Horarium.Repository;
 
-namespace Horarium.InMemory.PerformantInMemory
+namespace Horarium.InMemory
 {
     internal class OperationsProcessor
     {

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Horarium.InMemory.PerformantInMemory.Indexes;
+using Horarium.InMemory.Indexes;
 using Horarium.Repository;
 
-namespace Horarium.InMemory.PerformantInMemory
+namespace Horarium.InMemory
 {
     public class JobsStorage
     {

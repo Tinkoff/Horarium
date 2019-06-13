@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Horarium.Repository;
 
-namespace Horarium.InMemory.PerformantInMemory
+namespace Horarium.InMemory
 {
     public class PerformantInMemoryRepository : IJobRepository
     {

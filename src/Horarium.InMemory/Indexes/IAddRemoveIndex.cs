@@ -1,6 +1,6 @@
 using Horarium.Repository;
 
-namespace Horarium.InMemory.PerformantInMemory.Indexes
+namespace Horarium.InMemory.Indexes
 {
     public interface IAddRemoveIndex
     {

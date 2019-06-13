@@ -1,9 +1,9 @@
 using System;
 using Horarium.Repository;
 
-namespace Horarium.InMemory.PerformantInMemory.Indexes.Comparers
+namespace Horarium.InMemory.Indexes.Comparers
 {
-    public static class FailoverComparer
+    public static class StaticJobIdComparer
     {
         public static int Compare(JobDb x, JobDb y)
         {

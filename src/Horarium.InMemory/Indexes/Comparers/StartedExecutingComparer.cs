@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using Horarium.Repository;
 
-namespace Horarium.InMemory.PerformantInMemory.Indexes.Comparers
+namespace Horarium.InMemory.Indexes.Comparers
 {
     public class StartedExecutingComparer : IComparer<JobDb>
     {
@@ -11,7 +10,7 @@ namespace Horarium.InMemory.PerformantInMemory.Indexes.Comparers
             if (x.StartedExecuting < y.StartedExecuting) return -1;
             if (x.StartedExecuting > y.StartedExecuting) return 1;
 
-            return FailoverComparer.Compare(x, y);
+            return StaticJobIdComparer.Compare(x, y);
         }
     }
 }
