@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+
 using Horarium.Interfaces;
 using Horarium.Repository;
 using Newtonsoft.Json;
@@ -41,11 +42,11 @@ namespace Horarium.Handlers
 
             try
             {
-                using (_settings.JobFactory.BeginScope())
+                using (var scope = _settings.JobScopeFactory.Create())
                 {
                     try
                     {
-                        jobImplementation = _settings.JobFactory.CreateJob(jobMetadata.JobType);
+                        jobImplementation = scope.CreateJob(jobMetadata.JobType);
                     }
                     catch (Exception ex)
                     {
@@ -85,12 +86,12 @@ namespace Horarium.Handlers
         {
             try
             {
-                using (_settings.JobFactory.BeginScope())
+                using (var scope = _settings.JobScopeFactory.Create())
                 {
                     dynamic jobImplementation;
                     try
                     {
-                        jobImplementation = _settings.JobFactory.CreateJob(jobMetadata.JobType);
+                        jobImplementation = scope.CreateJob(jobMetadata.JobType);
                     }
                     catch (Exception ex)
                     {

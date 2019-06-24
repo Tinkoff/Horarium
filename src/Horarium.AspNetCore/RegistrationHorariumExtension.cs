@@ -60,9 +60,9 @@ namespace Horarium.AspNetCore
 
         private static void PrepareSettings(HorariumSettings settings, IServiceProvider serviceProvider)
         {
-            if (settings.JobFactory is DefaultJobFactory)
+            if (settings.JobScopeFactory is DefaultJobScopeFactory)
             {
-                settings.JobFactory = new JobFactory(serviceProvider);
+                settings.JobScopeFactory = new JobScopeFactory(serviceProvider);
             }
 
             if (settings.Logger is EmptyLogger)

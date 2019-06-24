@@ -10,7 +10,7 @@ namespace Horarium
 
         public TimeSpan ObsoleteExecutingJob { get; set; } = TimeSpan.FromMinutes(5);
 
-        public IJobFactory JobFactory { get; set; } = new DefaultJobFactory();
+        public IJobScopeFactory JobScopeFactory { get; set; } = new DefaultJobScopeFactory();
 
         public IHorariumLogger Logger { get; set; } = new EmptyLogger();
 

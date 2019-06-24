@@ -12,13 +12,40 @@ namespace Horarium.Test
     public class ExecutorJobTest
     {
         [Fact]
+        public async Task GetJobFromScope_ThenDisposeScope()
+        {
+            var jobRepositoryMock = new Mock<IJobRepository>();
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
+
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+                .Returns(() => new TestJob());
+
+            var executorJob = new ExecutorJob(
+                jobRepositoryMock.Object,
+                Mock.Of<IAdderJobs>(),
+                new HorariumSettings
+                {
+                    JobScopeFactory = jobScopeFactoryMock.Object
+                });
+
+            await executorJob.Execute(new JobMetadata
+            {
+                JobParam = "StringParams",
+                JobType = typeof(TestJob)
+            });
+
+            jobScopeFactoryMock.Verify(x => x.Create(), Times.Once);
+            jobScopeMock.Verify(x => x.CreateJob(typeof(TestJob)), Times.Once);
+            jobScopeMock.Verify(x => x.Dispose(), Times.Once);
+        }
+
+        [Fact]
         public async Task ExceptionInJob_SaveError()
         {
             var jobRepositoryMock = new Mock<IJobRepository>();
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
 
-            var jobFactoryMock = new Mock<IJobFactory>();
-
-            jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Returns(() => new TestFailedJob());
 
             var executorJob = new ExecutorJob(
@@ -26,7 +53,7 @@ namespace Horarium.Test
                 Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
-                    JobFactory = jobFactoryMock.Object
+                    JobScopeFactory = jobScopeFactoryMock.Object
                 });
 
             await executorJob.Execute(new JobMetadata
@@ -43,18 +70,17 @@ namespace Horarium.Test
         public async Task ExceptionCreateJob_LoggingError()
         {
             var jobLoggingMock = new Mock<IHorariumLogger>();
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
 
-            var jobFactoryMock = new Mock<IJobFactory>();
-
-            jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Throws<Exception>();
 
             var executorJob = new ExecutorJob(
                 Mock.Of<IJobRepository>(),
                 Mock.Of<IAdderJobs>(),
-                new HorariumSettings()
+                new HorariumSettings
                 {
-                    JobFactory = jobFactoryMock.Object,
+                    JobScopeFactory = jobScopeFactoryMock.Object,
                     Logger = jobLoggingMock.Object
                 });
 
@@ -71,11 +97,11 @@ namespace Horarium.Test
         [Fact]
         public async Task ExceptionInJob_SaveError_WhenAllRepeatesIsFailed()
         {
-            var jobFactoryMock = new Mock<IJobFactory>();
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
 
             var job = new TestAllRepeatesIsFailedJob();
 
-            jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Returns(() => job);
 
             var executorJob = new ExecutorJob(
@@ -83,7 +109,7 @@ namespace Horarium.Test
                 Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
-                    JobFactory = jobFactoryMock.Object
+                    JobScopeFactory = jobScopeFactoryMock.Object
                 });
 
             await executorJob.Execute(new JobMetadata
@@ -99,19 +125,19 @@ namespace Horarium.Test
         [Fact]
         public async Task ExceptionInJob_SaveError_WhenNotAllRepeatesIsFailed()
         {
-            var jobFactoryMock = new Mock<IJobFactory>();
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
 
             var job = new TestAllRepeatesIsFailedJob();
 
-            jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Returns(() => job);
 
             var executorJob = new ExecutorJob(
                 Mock.Of<IJobRepository>(),
                 Mock.Of<IAdderJobs>(),
-                new HorariumSettings()
+                new HorariumSettings
                 {
-                    JobFactory = jobFactoryMock.Object
+                    JobScopeFactory = jobScopeFactoryMock.Object
                 });
 
             await executorJob.Execute(new JobMetadata
@@ -128,23 +154,24 @@ namespace Horarium.Test
         public async Task RecurrentJob_DeleteAfterRun()
         {
             var jobRepositoryMock = new Mock<IJobRepository>();
-            var jobFactoryMock = new Mock<IJobFactory>();
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
 
             const string cron = "*/15 * * * * *";
 
-            jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Returns(() => new TestReccurrentJob());
             jobRepositoryMock.Setup(x => x.GetCronForRecurrentJob(It.IsAny<string>()))
                 .ReturnsAsync(cron);
 
-            var executorJob = new ExecutorJob(jobRepositoryMock.Object,
+            var executorJob = new ExecutorJob(
+                jobRepositoryMock.Object,
                 Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
-                    JobFactory = jobFactoryMock.Object
+                    JobScopeFactory = jobScopeFactoryMock.Object
                 });
 
-            await executorJob.Execute(new JobMetadata
+            await executorJob.Execute(new JobMetadata()
             {
                 JobParam = null,
                 JobType = typeof(TestReccurrentJob),
@@ -160,12 +187,12 @@ namespace Horarium.Test
         {
             // Arrange
             var jobRepositoryMock = new Mock<IJobRepository>();
-            var jobFactoryMock = new Mock<IJobFactory>();
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
             var jobAdderJob = new Mock<IAdderJobs>();
 
             const string cron = "*/15 * * * * *";
 
-            jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Returns(() => throw new Exception());
             jobRepositoryMock.Setup(x => x.GetCronForRecurrentJob(It.IsAny<string>()))
                 .ReturnsAsync(cron);
@@ -175,7 +202,7 @@ namespace Horarium.Test
                 jobAdderJob.Object,
                 new HorariumSettings
                 {
-                    JobFactory = jobFactoryMock.Object
+                    JobScopeFactory = jobScopeFactoryMock.Object
                 });
 
             var job = new JobMetadata()
@@ -202,14 +229,14 @@ namespace Horarium.Test
         {
             // Arrange
             var jobLoggingMock = new Mock<IHorariumLogger>();
-            var jobFactoryMock = new Mock<IJobFactory>();
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
             var jobRepositoryMock = new Mock<IJobRepository>();
 
             const string cron = "*/15 * * * * *";
 
             jobRepositoryMock.Setup(x => x.GetCronForRecurrentJob(It.IsAny<string>()))
                 .ReturnsAsync(cron);
-            jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Throws<Exception>();
 
             var executorJob = new ExecutorJob(
@@ -217,7 +244,7 @@ namespace Horarium.Test
                 Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
-                    JobFactory = jobFactoryMock.Object,
+                    JobScopeFactory = jobScopeFactoryMock.Object,
                     Logger = jobLoggingMock.Object
                 });
 
@@ -242,18 +269,17 @@ namespace Horarium.Test
             var startAt = new DateTime(2018, 10, 11, 15, 25, 0);
 
             var jobRepositoryMock = new Mock<IJobRepository>();
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
 
-            var jobFactoryMock = new Mock<IJobFactory>();
-
-            jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Returns(() => new TestJob());
 
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
                 Mock.Of<IAdderJobs>(),
-                new HorariumSettings()
+                new HorariumSettings
                 {
-                    JobFactory = jobFactoryMock.Object
+                    JobScopeFactory = jobScopeFactoryMock.Object,
                 });
 
             var jobExecuteTime = DateTime.Now;
@@ -283,23 +309,22 @@ namespace Horarium.Test
             var startAt = new DateTime(2018, 10, 11, 15, 25, 0);
 
             var jobRepositoryMock = new Mock<IJobRepository>();
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
 
-            var jobFactoryMock = new Mock<IJobFactory>();
-
-            jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Returns(() => new TestJob());
 
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
                 Mock.Of<IAdderJobs>(),
-                new HorariumSettings()
+                new HorariumSettings
                 {
-                    JobFactory = jobFactoryMock.Object
+                    JobScopeFactory = jobScopeFactoryMock.Object
                 });
 
             var jobExecuteTime = DateTime.Now;
 
-            await executorJob.Execute(new JobMetadata()
+            await executorJob.Execute(new JobMetadata
             {
                 JobParam = "StringParams",
                 JobType = typeof(TestJob),
@@ -325,10 +350,9 @@ namespace Horarium.Test
             var delay = TimeSpan.FromHours(4);
 
             var jobRepositoryMock = new Mock<IJobRepository>();
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
 
-            var jobFactoryMock = new Mock<IJobFactory>();
-
-            jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Returns(() => new TestJob());
 
             var executorJob = new ExecutorJob(
@@ -336,7 +360,7 @@ namespace Horarium.Test
                 Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
-                    JobFactory = jobFactoryMock.Object
+                    JobScopeFactory = jobScopeFactoryMock.Object
                 });
 
             var jobExecuteTime = DateTime.Now;
@@ -360,46 +384,13 @@ namespace Horarium.Test
                                                                        && job.StartAt >= jobExecuteTime + delay)));
         }
 
-        [Fact]
-        public async Task JobWithoutSettingsRepeat_UseRepeatStrategyFromSettings()
+        private static (Mock<IJobScopeFactory> jobScopeFactoryMock, Mock<IJobScope> jobScopeMock) CreateScopeMock()
         {
-            var jobFactoryMock = new Mock<IJobFactory>();
-            var strategyMock = new Mock<IFailedRepeatStrategy>();
-            strategyMock.Setup(x => x.GetNextStartInterval(1))
-                .Returns(TimeSpan.Zero);
+            var jobScopeMock = new Mock<IJobScope>();
+            var jobScopeFactoryMock = new Mock<IJobScopeFactory>();
+            jobScopeFactoryMock.Setup(x => x.Create()).Returns(jobScopeMock.Object);
 
-            var jobRepository = new Mock<IJobRepository>();
-
-            DateTime startDate = DateTime.MinValue;
-
-            jobRepository.Setup(x => x.RepeatJob(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<Exception>()))
-                .Returns(Task.CompletedTask)
-                .Callback<string, DateTime, Exception>((id, date, ex) => startDate = date);
-
-            var job = new TestAllRepeatesIsFailedJob();
-
-            jobFactoryMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
-                .Returns(() => job);
-
-            var executorJob = new ExecutorJob(
-                jobRepository.Object,
-                Mock.Of<IAdderJobs>(),
-                new HorariumSettings
-                {
-                    JobFactory = jobFactoryMock.Object,
-                    FailedRepeatStrategy = strategyMock.Object
-                });
-
-            await executorJob.Execute(new JobMetadata
-            {
-                JobParam = new object(),
-                JobType = typeof(TestAllRepeatesIsFailedJob),
-                CountStarted = 1
-            });
-
-            strategyMock.Verify(x => x.GetNextStartInterval(1));
-
-            Assert.Equal(DateTime.Now, startDate, TimeSpan.FromMilliseconds(100));
+            return (jobScopeFactoryMock, jobScopeMock);
         }
 
         public class TestFailedJob : IJob<object>
