@@ -15,8 +15,7 @@ namespace Horarium
         public IHorariumLogger Logger { get; set; } = new EmptyLogger();
 
         public JsonSerializerSettings JsonSerializerSettings { get; set; } = new JsonSerializerSettings();
-        
-        
+
         public IFailedRepeatStrategy FailedRepeatStrategy { get; set; } = new DefaultRepeatStrategy();
 
         public int MaxRepeatCount { get; set; } = 10;
