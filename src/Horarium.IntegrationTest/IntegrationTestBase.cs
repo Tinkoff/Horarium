@@ -7,7 +7,7 @@ namespace Horarium.IntegrationTest
     public class IntegrationTestBase
     {
         protected const string IntegrationTestCollection = "IntegrationTestCollection";
-        private static readonly string DatabaseNameMongo = "IntegrationTestScheduler" + Guid.NewGuid().ToString();
+        private static readonly string DatabaseNameMongo = "IntegrationTestHorarium" + Guid.NewGuid().ToString();
 
         private readonly string _connectionMongo =
             $"mongodb://{Environment.GetEnvironmentVariable("MONGO_ADDRESS") ?? "localhost"}:27017/{DatabaseNameMongo}";

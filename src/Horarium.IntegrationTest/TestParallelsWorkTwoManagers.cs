@@ -30,7 +30,7 @@ namespace Horarium.IntegrationTest
             Assert.NotEmpty(TestJob.StackJobs);
 
             Assert.False(TestJob.StackJobs.GroupBy(x => x).Any(g => g.Count() > 1),
-                "Same jobs runs on 2 times");
+                "Same job was executed multiple times");
         }
 
         /// <summary>
