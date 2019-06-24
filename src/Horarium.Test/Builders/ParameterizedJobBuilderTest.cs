@@ -130,5 +130,18 @@ namespace Horarium.Test.Builders
             _jobsAdderMock.Verify(a => a.AddEnqueueJob(It.IsAny<JobMetadata>()), Times.Once);
             _jobsAdderMock.VerifyNoOtherCalls();
         }
+        
+        [Fact]
+        public async Task MaxRepeatCountIsZero_ThrowException()
+        {
+            // Arrange
+            const int maxRepeatCount = 0;
+
+            // Act
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                new ParameterizedJobBuilder<TestJob, string>(_jobsAdderMock.Object, "HALLO", _globalObsoleteInterval)
+                    .MaxRepeatCount(maxRepeatCount));
+
+        }
     }
 }

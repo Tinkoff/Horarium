@@ -23,7 +23,7 @@ namespace Horarium.Builders.Parameterized
         /// <summary>
         /// Set custom max failed repeat count
         /// </summary>
-        /// <param name="count"></param>
+        /// <param name="count">min value is 1, it's mean this job start only one time</param>
         /// <returns></returns>
         IParameterizedJobBuilder MaxRepeatCount(int count);
     }

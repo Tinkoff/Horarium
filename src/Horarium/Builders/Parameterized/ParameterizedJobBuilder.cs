@@ -56,6 +56,10 @@ namespace Horarium.Builders.Parameterized
 
         public IParameterizedJobBuilder MaxRepeatCount(int count)
         {
+            if (count < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count),"min value is 1");
+            }
             Job.MaxRepeatCount = count;
             return this;
         }

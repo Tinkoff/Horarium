@@ -383,6 +383,93 @@ namespace Horarium.Test
             jobRepositoryMock.Verify(x => x.AddJob(It.Is<JobDb>(job => job.StartAt != startAt
                                                                        && job.StartAt >= jobExecuteTime + delay)));
         }
+        
+        [Fact]
+        public async Task ThrowExceptionJobWithoutFailedStrategy_UseDefaultFailedStrategy()
+        {
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
+
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+                .Returns(() => new TestFailedJob());
+            
+            var failedRepeatStrategyMock = new Mock<IFailedRepeatStrategy>();
+
+            var executorJob = new ExecutorJob(
+                Mock.Of<IJobRepository>(),
+                Mock.Of<IAdderJobs>(),
+                new HorariumSettings
+                {
+                    JobScopeFactory = jobScopeFactoryMock.Object,
+                    FailedRepeatStrategy = failedRepeatStrategyMock.Object
+                });
+
+            await executorJob.Execute(new JobMetadata(){
+                JobParam = new object(),
+                JobType = typeof(TestFailedJob)
+            });
+
+            failedRepeatStrategyMock.Verify(x=>x.GetNextStartInterval(It.IsAny<int>()));
+        }
+        
+        [Fact]
+        public async Task ThrowExceptionJobWithFailedStrategy_UseFailedStrategyFromJob()
+        {
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
+
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+                .Returns(() => new TestFailedJob());
+            
+            var failedRepeatStrategyMock = new Mock<IFailedRepeatStrategy>();
+
+            var executorJob = new ExecutorJob(
+                Mock.Of<IJobRepository>(),
+                Mock.Of<IAdderJobs>(),
+                new HorariumSettings
+                {
+                    JobScopeFactory = jobScopeFactoryMock.Object,
+                    FailedRepeatStrategy = failedRepeatStrategyMock.Object
+                });
+
+            await executorJob.Execute(new JobMetadata(){
+                JobParam = new object(),
+                JobType = typeof(TestFailedJob),
+                RepeatStrategy = typeof(DefaultRepeatStrategy)
+            });
+
+            failedRepeatStrategyMock.Verify(x=>x.GetNextStartInterval(It.IsAny<int>()), Times.Never);
+        }
+        
+        [Fact]
+        public async Task ThrowExceptionJobCountStartedEqMax_DontCallFailedStrategyAndFailedJob()
+        {
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
+            
+            var jobRepositoryMock = new Mock<IJobRepository>();
+
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+                .Returns(() => new TestFailedJob());
+            
+            var failedRepeatStrategyMock = new Mock<IFailedRepeatStrategy>();
+
+            var executorJob = new ExecutorJob(
+                jobRepositoryMock.Object,
+                Mock.Of<IAdderJobs>(),
+                new HorariumSettings
+                {
+                    JobScopeFactory = jobScopeFactoryMock.Object,
+                    FailedRepeatStrategy = failedRepeatStrategyMock.Object,
+                    MaxRepeatCount = 10
+                });
+
+            await executorJob.Execute(new JobMetadata(){
+                JobParam = new object(),
+                JobType = typeof(TestFailedJob),
+                CountStarted = 10
+            });
+
+            failedRepeatStrategyMock.Verify(x=>x.GetNextStartInterval(It.IsAny<int>()), Times.Never);
+            jobRepositoryMock.Verify(X=>X.FailedJob(It.IsAny<string>(), It.IsAny<Exception>()));
+        }
 
         private static (Mock<IJobScopeFactory> jobScopeFactoryMock, Mock<IJobScope> jobScopeMock) CreateScopeMock()
         {
