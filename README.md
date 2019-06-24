@@ -225,14 +225,13 @@ public class DefaultRepeatStrategy :IFailedRepeatStrategy
     public TimeSpan GetNextStartInterval(int countStarted)
     {
         const int increaseRepeat = 10;
-            return TimeSpan.FromMinutes(increaseRepeat * countStarted);
+        return TimeSpan.FromMinutes(increaseRepeat * countStarted);
     }
 }
 ```
 
-This class call every time when a job failed, and should return next `TimeSpan`.
+This class is call every time when a job failed, and it has to return next `TimeSpan`.
 For override default, change settings in ```HorariumSettings```
-
 
 ```csharp
 new HorariumSettings
