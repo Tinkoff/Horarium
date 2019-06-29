@@ -213,11 +213,11 @@ In case of `HorariumServer`, don't forget to start it in your entypoint:
 
 ## Failed repeat strategy for jobs
 
-When a job failed, Horarium can handle this exception with the same strategy.
-By default, the job repeats 10 times after 10 min, 20 min and etc.
-You can override this strategy use interface `IFailedRepeatStrategy`
+When a job fails, Horarium can handle this exception with the same strategy.
+By default, the job repeats 10 times with delays of 10 minutes, 20 minutes, 30 minutes and etc.
+You can override this strategy using `IFailedRepeatStrategy` interface.
 
-Example default realization:
+Example of default `DefaultRepeatStrategy` implementation:
 
 ```csharp
 public class DefaultRepeatStrategy :IFailedRepeatStrategy
@@ -230,8 +230,8 @@ public class DefaultRepeatStrategy :IFailedRepeatStrategy
 }
 ```
 
-This class is call every time when a job failed, and it has to return next `TimeSpan`.
-For override default, change settings in ```HorariumSettings```
+This class is called every time when a job fails, and it has to return `TimeSpan` of the next scheduled job run.
+To override default behavior globally, change settings in ```HorariumSettings```
 
 ```csharp
 new HorariumSettings
@@ -241,7 +241,7 @@ new HorariumSettings
 });
 ```
 
-For override default for a current job:
+To override the default behavior for a particular job:
 
 ```csharp
 await horarium.Create<TestJob, int>(666)
