@@ -12,5 +12,19 @@ namespace Horarium.Builders.Parameterized
         /// <typeparam name="TJobParam"></typeparam>
         /// <returns></returns>
         IParameterizedJobBuilder Next<TJob, TJobParam>(TJobParam parameters) where TJob : IJob<TJobParam>;
+
+        /// <summary>
+        /// Add custom failed repeat strategy for job
+        /// </summary>
+        /// <typeparam name="TRepeat"></typeparam>
+        /// <returns></returns>
+        IParameterizedJobBuilder AddRepeatStrategy<TRepeat>() where TRepeat : IFailedRepeatStrategy;
+        
+        /// <summary>
+        /// Set custom max failed repeat count
+        /// </summary>
+        /// <param name="count">min value is 1, it's mean this job start only one time</param>
+        /// <returns></returns>
+        IParameterizedJobBuilder MaxRepeatCount(int count);
     }
 }
