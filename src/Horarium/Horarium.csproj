@@ -6,6 +6,7 @@
     <Title>Horarium</Title>
     <Authors>bobreshovr</Authors>
     <PackageDescription>Horarium is the .Net library to manage background jobs</PackageDescription>
+    <PackageProjectUrl>https://github.com/TinkoffCreditSystems/Horarium</PackageProjectUrl>
     <RepositoryUrl>https://github.com/TinkoffCreditSystems/Horarium</RepositoryUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>

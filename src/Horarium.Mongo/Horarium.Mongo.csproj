@@ -8,6 +8,7 @@
         <Authors>bobreshovr</Authors>
         <PackageDescription>Horarium.Mongo is the .Net library to support MongoDB in Horarium</PackageDescription>
         <RepositoryUrl>https://github.com/TinkoffCreditSystems/Horarium</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/TinkoffCreditSystems/Horarium</PackageProjectUrl>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     </PropertyGroup>
 
