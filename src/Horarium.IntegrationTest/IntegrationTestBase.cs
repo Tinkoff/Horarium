@@ -9,11 +9,9 @@ namespace Horarium.IntegrationTest
     {
         protected const string IntegrationTestCollection = "IntegrationTestCollection";
         private string DatabaseNameMongo => "IntegrationTestHorarium" + Guid.NewGuid();
-
         
         private string ConnectionMongo => $"mongodb://{Environment.GetEnvironmentVariable("MONGO_ADDRESS") ?? "localhost"}:27017/{DatabaseNameMongo}";
-
-
+        
         protected HorariumServer CreateHorariumServer()
         {
             var dataBase = Environment.GetEnvironmentVariable("DataBase");

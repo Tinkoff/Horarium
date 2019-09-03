@@ -23,7 +23,9 @@ namespace Horarium.IntegrationTest
             }
 
             await Task.Delay(10000);
+            await Task.Delay(10000);
 
+            firstScheduler.Dispose();
             firstScheduler.Dispose();
             secondScheduler.Dispose();
 
@@ -32,7 +34,6 @@ namespace Horarium.IntegrationTest
             Assert.False(TestJob.StackJobs.GroupBy(x => x).Any(g => g.Count() > 1),
                 "Same job was executed multiple times");
         }
-
         
     }
 }

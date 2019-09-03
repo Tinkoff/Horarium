@@ -5,11 +5,11 @@ namespace Horarium.IntegrationTest.Jobs
 {
     public class OneTimeJob : IJob<int>
     {
-        public static bool Runned;
+        public static bool Run;
 
         public async Task Execute(int param)
         {
-            Runned = true;
+            Run = true;
         }
     }
 }

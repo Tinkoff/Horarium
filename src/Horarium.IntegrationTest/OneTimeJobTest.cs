@@ -20,7 +20,7 @@ namespace Horarium.IntegrationTest
 
             horarium.Dispose();
 
-            Assert.True(OneTimeJob.Runned);
+            Assert.True(OneTimeJob.Run);
         }
     }
 }

@@ -10,12 +10,11 @@ namespace Horarium.IntegrationTest
     [Collection(IntegrationTestCollection)]
     public class RecurrentJobTest : IntegrationTestBase
     {
-
         [Fact]
         public async Task RecurrentJob_RunEverySeconds()
         {
             var horarium = CreateHorariumServer();
-            
+
             await horarium.CreateRecurrent<RecurrentJob>(Cron.Secondly()).Schedule();
 
             await Task.Delay(10000);
@@ -23,9 +22,9 @@ namespace Horarium.IntegrationTest
             horarium.Dispose();
 
             var executingTimes = RecurrentJob.ExecutingTime.ToArray();
-            
+
             Assert.NotEmpty(executingTimes);
-            
+
             var nextJobTime = executingTimes.First();
 
             foreach (var time in executingTimes)
@@ -34,7 +33,7 @@ namespace Horarium.IntegrationTest
                 nextJobTime = time.AddSeconds(1);
             }
         }
-        
+
         /// <summary>
         /// Тест проверяет, что при одновременной регистрации одного джоба разными шедулерами первый начнет выполняться, а второй нет,
         /// т.к. для рекуррентных джобов одновременно может выполняться только один экземпляр
