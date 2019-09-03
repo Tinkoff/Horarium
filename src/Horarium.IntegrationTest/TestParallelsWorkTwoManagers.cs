@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Horarium.InMemory;
 using Horarium.IntegrationTest.Jobs;
 using Xunit;
 
@@ -18,10 +19,14 @@ namespace Horarium.IntegrationTest
 
             for (var i = 0; i < 1000; i++)
             {
-                await firstScheduler.Create<TestJob, int>(i).Schedule();
+                await firstScheduler.Create<TestJob, TestJobParam>(new TestJobParam
+                {
+                    Counter = i,
+                    DbType = dataBase
+                }).Schedule();
                 await Task.Delay(10);
             }
-
+            
             await Task.Delay(10000);
             await Task.Delay(10000);
 
@@ -29,10 +34,10 @@ namespace Horarium.IntegrationTest
             firstScheduler.Dispose();
             secondScheduler.Dispose();
 
-            Assert.NotEmpty(TestJob.StackJobs);
+            Assert.NotEmpty(TestJob.StackJobs[dataBase]);
 
-            Assert.False(TestJob.StackJobs.GroupBy(x => x).Any(g => g.Count() > 1),
-                "Same job was executed multiple times");
+            Assert.False(TestJob.StackJobs[dataBase].GroupBy(x => x).Any(g => g.Count() > 1),
+                "Несколько джобов выполнилось на 2-х машинах");
         }
         
     }
