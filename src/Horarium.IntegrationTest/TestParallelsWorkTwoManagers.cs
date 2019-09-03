@@ -33,32 +33,6 @@ namespace Horarium.IntegrationTest
                 "Same job was executed multiple times");
         }
 
-        /// <summary>
-        /// Тест проверяет, что при одновременной регистрации одного джоба разными шедулерами первый начнет выполняться, а второй нет,
-        /// т.к. для рекуррентных джобов одновременно может выполняться только один экземпляр
-        /// </summary>
-        /// <returns></returns>
-        [Fact]
-        public async Task Scheduler_SecondInstanceStart_MustUpdateRecurrentJobCronParameters()
-        {
-            var watch = Stopwatch.StartNew();
-            var scheduler = CreateHorariumServer();
-
-            while (true)
-            {
-                await scheduler.CreateRecurrent<TestRecurrentJob>(Cron.SecondInterval(1)).Schedule();
-
-                if (watch.Elapsed > TimeSpan.FromSeconds(15))
-                {
-                    break;
-                }
-            }
-
-            await Task.Delay(TimeSpan.FromSeconds(5));
-
-            scheduler.Dispose();
-
-            Assert.Single(TestRecurrentJob.StackJobs);
-        }
+        
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Horarium.Mongo;
 using Horarium.Repository;
 
@@ -7,11 +8,12 @@ namespace Horarium.IntegrationTest
     public class IntegrationTestBase
     {
         protected const string IntegrationTestCollection = "IntegrationTestCollection";
-        private static readonly string DatabaseNameMongo = "IntegrationTestHorarium" + Guid.NewGuid().ToString();
+        private string DatabaseNameMongo => "IntegrationTestHorarium" + Guid.NewGuid();
 
-        private readonly string _connectionMongo =
-            $"mongodb://{Environment.GetEnvironmentVariable("MONGO_ADDRESS") ?? "localhost"}:27017/{DatabaseNameMongo}";
         
+        private string ConnectionMongo => $"mongodb://{Environment.GetEnvironmentVariable("MONGO_ADDRESS") ?? "localhost"}:27017/{DatabaseNameMongo}";
+
+
         protected HorariumServer CreateHorariumServer()
         {
             var dataBase = Environment.GetEnvironmentVariable("DataBase");
@@ -21,7 +23,7 @@ namespace Horarium.IntegrationTest
             switch (dataBase)
             {
                 case "MongoDB":
-                    jobRepository = MongoRepositoryFactory.Create(_connectionMongo);
+                    jobRepository = MongoRepositoryFactory.Create(ConnectionMongo);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(dataBase), dataBase, null);
