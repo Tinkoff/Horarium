@@ -4,9 +4,9 @@ using Horarium.Interfaces;
 
 namespace Horarium.IntegrationTest.Jobs
 {
-    public class TestRecurrentJob : IJobRecurrent
+    public class RecurrentJobForUpdate : IJobRecurrent
     {
-        public static readonly ConcurrentStack<TestRecurrentJob> StackJobs = new ConcurrentStack<TestRecurrentJob>();
+        public static readonly ConcurrentStack<RecurrentJobForUpdate> StackJobs = new ConcurrentStack<RecurrentJobForUpdate>();
 
         public async Task Execute()
         {
