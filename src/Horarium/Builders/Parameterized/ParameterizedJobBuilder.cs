@@ -19,9 +19,9 @@ namespace Horarium.Builders.Parameterized
             _adderJobs = adderJobs;
             _globalObsoleteInterval = globalObsoleteInterval;
             Job.ObsoleteInterval = globalObsoleteInterval;
-            
+
             Job.JobParam = parameters;
-            
+
             _jobsQueue.Enqueue(Job);
         }
 
@@ -42,16 +42,32 @@ namespace Horarium.Builders.Parameterized
         {
             GenerateNewJob<TNextJob>();
             Job.JobParam = parameters;
-            
+
             _jobsQueue.Enqueue(Job);
-            
+
             return this;
         }
-        
+
+        public IParameterizedJobBuilder AddRepeatStrategy<TRepeat>() where TRepeat : IFailedRepeatStrategy
+        {
+            Job.RepeatStrategy = typeof(TRepeat);
+            return this;
+        }
+
+        public IParameterizedJobBuilder MaxRepeatCount(int count)
+        {
+            if (count < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count),"min value is 1");
+            }
+            Job.MaxRepeatCount = count;
+            return this;
+        }
+
         public override Task Schedule()
         {
             var job = _jobsQueue.Dequeue();
-            
+
             FillWithDefaultIfNecessary(job);
             var previous = job;
 
@@ -61,7 +77,7 @@ namespace Horarium.Builders.Parameterized
                 previous = previous.NextJob;
                 FillWithDefaultIfNecessary(previous);
             }
-            
+
             return _adderJobs.AddEnqueueJob(job);
         }
 

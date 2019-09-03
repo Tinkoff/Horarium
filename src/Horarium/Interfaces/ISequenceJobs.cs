@@ -6,26 +6,26 @@ namespace Horarium.Interfaces
     public interface ISequenceJobs
     {
         /// <summary>
-        /// Указываем следующий джоб для выполнения последовательности
+        /// Indicate the next job for sequence execution
         /// </summary>
-        /// <param name="param">Параметры данного джоба, будут переданы при старте</param>
-        /// <typeparam name="TJob">Тип джоба, сам джоб будет создан через фабрику</typeparam>
-        /// <typeparam name="TJobParam">Тип параметров</typeparam>
+        /// <param name="param">The job parameters, will be send at start</param>
+        /// <typeparam name="TJob">Job type, the job will be created through the factory</typeparam>
+        /// <typeparam name="TJobParam">Parameters type</typeparam>
         /// <returns></returns>
         ISequenceJobs NextJob<TJob, TJobParam>(TJobParam param) where TJob : IJob<TJobParam>;
 
         /// <summary>
-        /// Указываем следующий джоб для выполнения последовательности с задержкой выполнения
+        /// Indicate the next job for sequence with delay execution
         /// </summary>
-        /// <param name="param">Параметры данного джоба, будут переданы при старте</param>
-        /// <param name="delay">Задержка выполнения джоба, после окончания выполнения предыдущего</param>
-        /// <typeparam name="TJob">Тип джоба, сам джоб будет создан через фабрику</typeparam>
-        /// <typeparam name="TJobParam">Тип параметров</typeparam>
+        /// <param name="param">The job parameters, will be send at start</param>
+        /// <param name="delay">Job execution delay, after the previous execution</param>
+        /// <typeparam name="TJob">Job type, the job will be created through the factory</typeparam>
+        /// <typeparam name="TJobParam">Parameters type</typeparam>
         /// <returns></returns>
         ISequenceJobs NextJob<TJob, TJobParam>(TJobParam param, TimeSpan delay) where TJob : IJob<TJobParam>;
 
         /// <summary>
-        /// Запускает данную последовательность 
+        /// Run this sequence
         /// </summary>
         /// <returns></returns>
         Task Run();

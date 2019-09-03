@@ -29,5 +29,9 @@ namespace Horarium
         public TimeSpan? Delay { get; set; }
         
         public TimeSpan ObsoleteInterval { get; set; }
+        
+        public Type RepeatStrategy { get; set; }
+        
+        public int MaxRepeatCount { get; set; }
     }
 }

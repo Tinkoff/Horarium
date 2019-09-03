@@ -26,7 +26,9 @@ namespace Horarium.Mongo
                 NextJob = NextJob?.ToJobDb(),
                 Cron = Cron,
                 Delay = Delay,
-                ObsoleteInterval = ObsoleteInterval
+                ObsoleteInterval = ObsoleteInterval,
+                RepeatStrategy = RepeatStrategy,
+                MaxRepeatCount = MaxRepeatCount
             };
         }
 
@@ -61,6 +63,10 @@ namespace Horarium.Mongo
 
         [BsonTimeSpanOptions(BsonType.Int64, TimeSpanUnits.Milliseconds)]
         public TimeSpan ObsoleteInterval { get; set; }
+        
+        public string RepeatStrategy { get; set; }
+        
+        public int MaxRepeatCount { get; set; }
 
         public static JobMongoModel CreateJobMongoModel(JobDb jobDb)
         {
@@ -79,7 +85,9 @@ namespace Horarium.Mongo
                 NextJob = jobDb.NextJob != null ? CreateJobMongoModel(jobDb.NextJob) : null,
                 Cron = jobDb.Cron,
                 Delay = jobDb.Delay,
-                ObsoleteInterval = jobDb.ObsoleteInterval
+                ObsoleteInterval = jobDb.ObsoleteInterval,
+                RepeatStrategy = jobDb.RepeatStrategy,
+                MaxRepeatCount = jobDb.MaxRepeatCount
             };
         }
     }

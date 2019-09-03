@@ -191,6 +191,7 @@ public class SimpleInjectorJobScope : IJobScope
 ```
 
 Then add `HorariumServer` (or `HorariumClient`):
+
 ```csharp
 container.RegisterSingleton<IHorarium>(() =>
 {
@@ -203,7 +204,57 @@ container.RegisterSingleton<IHorarium>(() =>
     return new HorariumServer(jobRepository, settings);
 });
 ```
+
 In case of `HorariumServer`, don't forget to start it in your entypoint:
+
 ```csharp
 ((HorariumServer) container.GetInstance<IHorarium>()).Start();
+```
+
+## Failed repeat strategy for jobs
+
+When a job fails, Horarium can handle this exception with the same strategy.
+By default, the job repeats 10 times with delays of 10 minutes, 20 minutes, 30 minutes and etc.
+You can override this strategy using `IFailedRepeatStrategy` interface.
+
+Example of default `DefaultRepeatStrategy` implementation:
+
+```csharp
+public class DefaultRepeatStrategy :IFailedRepeatStrategy
+{
+    public TimeSpan GetNextStartInterval(int countStarted)
+    {
+        const int increaseRepeat = 10;
+        return TimeSpan.FromMinutes(increaseRepeat * countStarted);
+    }
+}
+```
+
+This class is called every time when a job fails, and it has to return `TimeSpan` of the next scheduled job run.
+To override default behavior globally, change settings in ```HorariumSettings```
+
+```csharp
+new HorariumSettings
+{
+    FailedRepeatStrategy = new CustomFailedRepeatStrategy(),
+    MaxRepeatCount = 7
+});
+```
+
+To override the default behavior for a particular job:
+
+```csharp
+await horarium.Create<TestJob, int>(666)
+    .MaxRepeatCount(5)
+    .AddRepeatStrategy<DefaultRepeatStrategy>()
+    .Schedule();
+```
+
+If you want to disable all repeats, just set `MaxRepeatCount` to 1
+
+```csharp
+new HorariumSettings
+{
+    MaxRepeatCount = 1
+});
 ```

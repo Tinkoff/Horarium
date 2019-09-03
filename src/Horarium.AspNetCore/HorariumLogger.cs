@@ -25,12 +25,12 @@ namespace Horarium.AspNetCore
 
         public void Error(Exception ex)
         {
-            _logger.LogError(ex.Message, ex);
+            _logger.LogError(ex, ex.Message);
         }
 
         public void Error(string message, Exception ex)
         {
-            _logger.LogError(message, ex);
+            _logger.LogError(ex, message);
         }
     }
 }
