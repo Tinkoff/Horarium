@@ -80,7 +80,8 @@ namespace Horarium.Repository
                 Cron = Cron,
                 Delay = Delay,
                 ObsoleteInterval = ObsoleteInterval,
-                RepeatStrategy = string.IsNullOrEmpty(RepeatStrategy) ? null : Type.GetType(RepeatStrategy, true)
+                RepeatStrategy = string.IsNullOrEmpty(RepeatStrategy) ? null : Type.GetType(RepeatStrategy, true),
+                MaxRepeatCount = MaxRepeatCount
             };
         }
     }
