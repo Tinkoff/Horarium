@@ -22,7 +22,7 @@ namespace Horarium.InMemory
             {
                 _readyJobIndex,
                 _executingJobIndex,
-                _readyJobIndex,
+                _repeatJobIndex,
                 _failedJobIndex
             };
         }

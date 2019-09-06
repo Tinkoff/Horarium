@@ -61,7 +61,7 @@ namespace Horarium.InMemory
             
             public override void Execute()
             {
-                CompletionSource.SetResult(_query().Copy());
+                CompletionSource.SetResult(_query()?.Copy());
             }
         }
 

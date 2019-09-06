@@ -12,8 +12,6 @@ namespace Horarium.IntegrationTest
         {
             var horarium = CreateHorariumServer();
             
-            horarium.Start();
-
             await horarium.Create<OneTimeJob, int>(5).Schedule();
             
             await Task.Delay(1000);

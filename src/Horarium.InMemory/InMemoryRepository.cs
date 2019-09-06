@@ -25,7 +25,10 @@ namespace Horarium.InMemory
                 NextJob = source.NextJob?.Copy(),
                 Cron = source.Cron,
                 Delay = source.Delay,
-                ObsoleteInterval = source.ObsoleteInterval
+                ObsoleteInterval = source.ObsoleteInterval,
+                RepeatStrategy = source.RepeatStrategy,
+                MaxRepeatCount = source.MaxRepeatCount
+                
             };
         }
     }
@@ -68,7 +71,7 @@ namespace Horarium.InMemory
 
         public Task FailedJob(string jobId, Exception error)
         {
-            void Command()
+            return _processor.Execute(() =>
             {
                 var job = _storage.GetById(jobId);
                 if (job == null) return;
@@ -79,9 +82,7 @@ namespace Horarium.InMemory
                 job.Error = error.Message + error.StackTrace;
 
                 _storage.Add(job);
-            }
-
-            return _processor.Execute(Command);
+            });
         }
 
         public Task RemoveJob(string jobId)
@@ -91,8 +92,8 @@ namespace Horarium.InMemory
 
         public Task RepeatJob(string jobId, DateTime startAt, Exception error)
         {
-            void Command()
-            {    
+            return _processor.Execute(() =>
+            {
                 var job = _storage.GetById(jobId);
                 if (job == null) return;
 
@@ -103,14 +104,12 @@ namespace Horarium.InMemory
                 job.Error = error.Message + error.StackTrace;
 
                 _storage.Add(job);
-            }
-
-            return _processor.Execute(Command);
+            });
         }
 
         public Task AddRecurrentJob(JobDb job)
         {
-            void Command()
+            return _processor.Execute(() =>
             {
                 var foundJob = _storage.FindRecurrentJobToUpdate(job.JobKey) ?? job.Copy();
 
@@ -120,9 +119,7 @@ namespace Horarium.InMemory
                 foundJob.StartAt = job.StartAt;
 
                 _storage.Add(foundJob);
-            }
-
-            return _processor.Execute(Command);
+            });
         }
 
         public Task AddRecurrentJobSettings(RecurrentJobSettings settings)

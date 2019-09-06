@@ -19,25 +19,19 @@ namespace Horarium.IntegrationTest
 
             for (var i = 0; i < 1000; i++)
             {
-                await firstScheduler.Create<TestJob, TestJobParam>(new TestJobParam
-                {
-                    Counter = i,
-                    DbType = dataBase
-                }).Schedule();
+                await firstScheduler.Create<TestJob, int>(i).Schedule();
                 await Task.Delay(10);
             }
-            
-            await Task.Delay(10000);
+
             await Task.Delay(10000);
 
-            firstScheduler.Dispose();
             firstScheduler.Dispose();
             secondScheduler.Dispose();
 
-            Assert.NotEmpty(TestJob.StackJobs[dataBase]);
+            Assert.NotEmpty(TestJob.StackJobs);
 
-            Assert.False(TestJob.StackJobs[dataBase].GroupBy(x => x).Any(g => g.Count() > 1),
-                "Несколько джобов выполнилось на 2-х машинах");
+            Assert.False(TestJob.StackJobs.GroupBy(x => x).Any(g => g.Count() > 1),
+                "Same job was executed multiple times");
         }
         
     }
