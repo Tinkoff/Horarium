@@ -16,7 +16,7 @@ Support Databases
 | Database   | Support                                                                 |
 | ---------- | ----------------------------------------------------------------------- |
 | MongoDB    | Yes                                                                     |
-| In Memory  | Not yet [#5](https://github.com/TinkoffCreditSystems/Horarium/issues/5) |
+| In Memory  | Yes |
 | PostgreSQL | Not yet [#6](https://github.com/TinkoffCreditSystems/Horarium/issues/6) |
 
 ## Getting started
@@ -44,7 +44,7 @@ public class TestJob : IJob<int>
 Create ```HorariumServer``` and schedule ```TestJob```
 
 ```csharp
-var horarium = new HorariumServer(MongoRepositoryFactory.Create("mongodb://localhost:27017/horarium"));
+var horarium = new HorariumServer(new InMemoryRepository());
 horarium.Start();
 await horarium.Create<TestJob, int>(666)
         .Schedule();
@@ -258,3 +258,4 @@ new HorariumSettings
     MaxRepeatCount = 1
 });
 ```
+

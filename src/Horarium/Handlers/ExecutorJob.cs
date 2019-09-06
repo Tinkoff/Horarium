@@ -63,7 +63,7 @@ namespace Horarium.Handlers
 
                     if (jobMetadata.NextJob != null)
                     {
-                        jobMetadata.NextJob.StartAt = DateTime.Now + jobMetadata.NextJob.Delay.GetValueOrDefault();
+                        jobMetadata.NextJob.StartAt = DateTime.UtcNow + jobMetadata.NextJob.Delay.GetValueOrDefault();
 
                         await _jobRepository.AddJob(JobDb.CreatedJobDb(jobMetadata.NextJob,
                             _settings.JsonSerializerSettings));
@@ -158,7 +158,7 @@ namespace Horarium.Handlers
                 strategy = _settings.FailedRepeatStrategy;
             }
 
-            return DateTime.Now + strategy.GetNextStartInterval(jobMetadata.CountStarted);
+            return DateTime.UtcNow + strategy.GetNextStartInterval(jobMetadata.CountStarted);
         }
 
         private async Task ScheduleRecurrentNextTime(JobMetadata metadata)

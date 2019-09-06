@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Horarium.InMemory;
 using Horarium.IntegrationTest.Jobs;
 using Xunit;
 
@@ -23,9 +24,7 @@ namespace Horarium.IntegrationTest
             }
 
             await Task.Delay(10000);
-            await Task.Delay(10000);
 
-            firstScheduler.Dispose();
             firstScheduler.Dispose();
             secondScheduler.Dispose();
 

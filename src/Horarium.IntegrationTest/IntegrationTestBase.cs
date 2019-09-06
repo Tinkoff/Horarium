@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Horarium.InMemory;
 using Horarium.Mongo;
 using Horarium.Repository;
 
@@ -22,6 +23,9 @@ namespace Horarium.IntegrationTest
             {
                 case "MongoDB":
                     jobRepository = MongoRepositoryFactory.Create(ConnectionMongo);
+                    break;
+                case "Memory":
+                    jobRepository = new InMemoryRepository();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(dataBase), dataBase, null);
