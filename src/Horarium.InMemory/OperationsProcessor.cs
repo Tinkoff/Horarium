@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Concurrent;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Horarium.Repository;
 
@@ -7,28 +7,28 @@ namespace Horarium.InMemory
 {
     internal class OperationsProcessor
     {
-        private readonly ConcurrentQueue<BaseWrapper> _queue = new ConcurrentQueue<BaseWrapper>();
+        private readonly Channel<BaseWrapper> _channel = Channel.CreateUnbounded<BaseWrapper>();
 
         public OperationsProcessor()
         {
-            ProcessQueue();
+            Task.Run(ProcessQueue);
         }
 
-        private void ProcessQueue()
+        private async Task ProcessQueue()
         {
-            while (_queue.TryDequeue(out var operation))
+            while (await _channel.Reader.WaitToReadAsync())
             {
-                operation.Execute();
+                while (_channel.Reader.TryRead(out var operation))
+                {
+                    operation.Execute();
+                }
             }
-
-            Task.Delay(TimeSpan.FromMilliseconds(10))
-                .ContinueWith(x => ProcessQueue());
         }
 
         public Task Execute(Action command)
         {
             var wrapped = new CommandWrapper(command);
-            _queue.Enqueue(wrapped);
+            _channel.Writer.TryWrite(wrapped);
 
             return wrapped.Task;
         }
@@ -36,14 +36,15 @@ namespace Horarium.InMemory
         public Task<JobDb> Execute(Func<JobDb> query)
         {
             var wrapped = new QueryWrapper(query);
-            _queue.Enqueue(wrapped);
+            _channel.Writer.TryWrite(wrapped);
 
             return wrapped.Task;
         }
         
         private abstract class BaseWrapper
         {
-            protected readonly TaskCompletionSource<JobDb> CompletionSource = new TaskCompletionSource<JobDb>();
+            protected readonly TaskCompletionSource<JobDb> CompletionSource = 
+                new TaskCompletionSource<JobDb>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             public abstract void Execute();
 
