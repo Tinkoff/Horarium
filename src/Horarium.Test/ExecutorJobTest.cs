@@ -282,7 +282,7 @@ namespace Horarium.Test
                     JobScopeFactory = jobScopeFactoryMock.Object,
                 });
 
-            var jobExecuteTime = DateTime.Now;
+            var jobExecuteTime = DateTime.UtcNow;
 
             await executorJob.Execute(new JobMetadata()
             {
@@ -322,7 +322,7 @@ namespace Horarium.Test
                     JobScopeFactory = jobScopeFactoryMock.Object
                 });
 
-            var jobExecuteTime = DateTime.Now;
+            var jobExecuteTime = DateTime.UtcNow;
 
             await executorJob.Execute(new JobMetadata
             {
@@ -363,7 +363,7 @@ namespace Horarium.Test
                     JobScopeFactory = jobScopeFactoryMock.Object
                 });
 
-            var jobExecuteTime = DateTime.Now;
+            var jobExecuteTime = DateTime.UtcNow;
 
             await executorJob.Execute(new JobMetadata()
             {
