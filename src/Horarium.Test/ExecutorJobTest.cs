@@ -468,7 +468,35 @@ namespace Horarium.Test
             });
 
             failedRepeatStrategyMock.Verify(x=>x.GetNextStartInterval(It.IsAny<int>()), Times.Never);
-            jobRepositoryMock.Verify(X=>X.FailedJob(It.IsAny<string>(), It.IsAny<Exception>()));
+            jobRepositoryMock.Verify(x=>x.FailedJob(It.IsAny<string>(), It.IsAny<Exception>()));
+        }
+
+        [Fact]
+        public async Task FailedEventOfAJobThrows_FailedJobCalledNevertheless()
+        {
+            var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
+            var jobRepositoryMock = new Mock<IJobRepository>();
+
+            jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
+                .Returns(() => new TestFailedEventThrowsJob());
+            
+            var executorJob = new ExecutorJob(
+                jobRepositoryMock.Object,
+                Mock.Of<IAdderJobs>(),
+                new HorariumSettings
+                {
+                    JobScopeFactory = jobScopeFactoryMock.Object,
+                    MaxRepeatCount = 10
+                });
+
+            await executorJob.Execute(new JobMetadata
+            {
+                JobParam = new object(),
+                JobType = typeof(TestFailedEventThrowsJob),
+                CountStarted = 10
+            });
+            
+            jobRepositoryMock.Verify(x => x.FailedJob(It.IsAny<string>(), It.IsAny<Exception>()));
         }
 
         private static (Mock<IJobScopeFactory> jobScopeFactoryMock, Mock<IJobScope> jobScopeMock) CreateScopeMock()
@@ -501,6 +529,19 @@ namespace Horarium.Test
             {
                 FailedEventCalled = true;
                 return Task.CompletedTask;
+            }
+        }
+
+        public class TestFailedEventThrowsJob : IAllRepeatesIsFailed, IJob<object>
+        {
+            public Task Execute(object param)
+            {
+                throw new NotImplementedException();
+            }
+            
+            public Task FailedEvent(object param, Exception ex)
+            {
+                throw new NotImplementedException();
             }
         }
     }

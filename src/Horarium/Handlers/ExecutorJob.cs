@@ -132,7 +132,14 @@ namespace Horarium.Handlers
             {
                 if (jobImplementation != null && jobImplementation is IAllRepeatesIsFailed)
                 {
-                    await jobImplementation.FailedEvent((dynamic) jobMetadata.JobParam, ex);
+                    try
+                    {
+                        await jobImplementation.FailedEvent((dynamic) jobMetadata.JobParam, ex);
+                    }
+                    catch (Exception failedEventException)
+                    {
+                        _settings.Logger.Error($"{jobMetadata.JobType}'s .FailedEvent threw", failedEventException);
+                    }
                 }
 
                 await _jobRepository.FailedJob(jobMetadata.JobId, ex);
