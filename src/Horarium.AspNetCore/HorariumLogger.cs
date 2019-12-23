@@ -20,7 +20,7 @@ namespace Horarium.AspNetCore
 
         public void Debug(Exception ex)
         {
-            _logger.LogDebug(ex.Message, ex);
+            _logger.LogDebug(ex, ex.Message);
         }
 
         public void Error(Exception ex)
