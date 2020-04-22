@@ -103,6 +103,124 @@ namespace Horarium.Test
         }
 
         [Fact]
+        public async Task Start_ExecutionWithDelay_WithThrottle()
+        {
+            // Arrange
+            var jobRepositoryMock = new Mock<IJobRepository>();
+
+            var settings = new HorariumSettings
+            {
+                IntervalStartJob = TimeSpan.FromSeconds(1),
+                JobThrottleSettings = new JobThrottleSettings
+                {
+                    UseJobThrottle = true,
+                    IntervalMultiplier = 1,
+                    JobRetrievalAttempts = 1
+                }
+            };
+
+            var runnerJobs = new RunnerJobs(jobRepositoryMock.Object,
+                settings,
+                new JsonSerializerSettings(),
+                Mock.Of<IHorariumLogger>(),
+                Mock.Of<IExecutorJob>(),
+                Mock.Of<IUncompletedTaskList>());
+
+            // Act
+            runnerJobs.Start();
+            await Task.Delay(settings.IntervalStartJob - TimeSpan.FromMilliseconds(500));
+            jobRepositoryMock.Invocations.Clear();
+
+            await Task.Delay(settings.IntervalStartJob + settings.IntervalStartJob.Multiply(settings.JobThrottleSettings.IntervalMultiplier));
+            
+            // Assert
+            jobRepositoryMock.Verify(r => r.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
+        }
+        
+        [Fact]
+        public async Task Start_ExecutionWithDelay_IncreaseInterval()
+        {
+            // Arrange
+            var jobRepositoryMock = new Mock<IJobRepository>();
+
+            jobRepositoryMock.Setup(x => x.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()))
+                .ReturnsAsync(() => null);
+
+            var settings = new HorariumSettings
+            {
+                IntervalStartJob = TimeSpan.FromSeconds(1),
+                JobThrottleSettings = new JobThrottleSettings
+                {
+                    UseJobThrottle = true,
+                    IntervalMultiplier = 1,
+                    JobRetrievalAttempts = 1,
+                }
+            };
+
+            var runnerJobs = new RunnerJobs(jobRepositoryMock.Object,
+                settings,
+                new JsonSerializerSettings(),
+                Mock.Of<IHorariumLogger>(),
+                Mock.Of<IExecutorJob>(),
+                Mock.Of<IUncompletedTaskList>());
+
+            // Act
+            runnerJobs.Start();
+            await Task.Delay(settings.IntervalStartJob - TimeSpan.FromMilliseconds(500));
+            jobRepositoryMock.Invocations.Clear();
+
+            var interval = settings.IntervalStartJob +
+                           settings.IntervalStartJob.Multiply(settings.JobThrottleSettings.IntervalMultiplier);
+            await Task.Delay(interval);
+            interval += settings.IntervalStartJob.Multiply(settings.JobThrottleSettings.IntervalMultiplier);
+            await Task.Delay(interval);
+            interval += settings.IntervalStartJob.Multiply(settings.JobThrottleSettings.IntervalMultiplier);
+            await Task.Delay(interval);
+
+            // Assert
+            jobRepositoryMock.Verify(r => r.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Exactly(3));
+        }
+
+        [Fact]
+        public async Task Start_ExecutionWithDelay_MaxInterval()
+        {
+            // Arrange
+            var jobRepositoryMock = new Mock<IJobRepository>();
+
+            jobRepositoryMock.Setup(x => x.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()))
+                .ReturnsAsync(() => null);
+
+            var settings = new HorariumSettings
+            {
+                IntervalStartJob = TimeSpan.FromSeconds(1),
+                JobThrottleSettings = new JobThrottleSettings
+                {
+                    UseJobThrottle = true,
+                    IntervalMultiplier = 1,
+                    JobRetrievalAttempts = 1,
+                    MaxJobThrottleInterval = TimeSpan.FromSeconds(1)
+                }
+            };
+
+            var runnerJobs = new RunnerJobs(jobRepositoryMock.Object,
+                settings,
+                new JsonSerializerSettings(),
+                Mock.Of<IHorariumLogger>(),
+                Mock.Of<IExecutorJob>(),
+                Mock.Of<IUncompletedTaskList>());
+
+            // Act
+            runnerJobs.Start();
+            await Task.Delay(settings.IntervalStartJob - TimeSpan.FromMilliseconds(500));
+            jobRepositoryMock.Invocations.Clear();
+
+            await Task.Delay(TimeSpan.FromSeconds(5));
+
+            // Assert
+            jobRepositoryMock.Verify(r => r.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Exactly(5));
+        }
+
+        [Fact]
         public async Task Start_NextJobStarted_AddsJobTaskToUncompletedTasks()
         {
             // Arrange
