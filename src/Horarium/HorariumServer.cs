@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Horarium.Handlers;
 using Horarium.Interfaces;
 using Horarium.Repository;
@@ -15,8 +16,6 @@ namespace Horarium
         private readonly IAdderJobs _adderJobs;
 
         private readonly IJobRepository _jobRepository;
-
-        private readonly TimeSpan _timeoutStop = TimeSpan.FromSeconds(5);
 
         public HorariumServer(IJobRepository jobRepository)
             : this(jobRepository, new HorariumSettings())
@@ -36,13 +35,13 @@ namespace Horarium
             var executorJob = new ExecutorJob(_jobRepository, _adderJobs, _settings);
 
             _runnerJobs = new RunnerJobs(_jobRepository, _settings, _settings.JsonSerializerSettings, _settings.Logger,
-                executorJob);
+                executorJob, new UncompletedTaskList());
             _runnerJobs.Start();
         }
 
-        public void Stop()
+        public Task Stop()
         {
-            _runnerJobs.Stop().Wait(_timeoutStop);
+            return _runnerJobs.Stop();
         }
 
         public new void Dispose()

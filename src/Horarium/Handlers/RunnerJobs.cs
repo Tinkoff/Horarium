@@ -16,6 +16,7 @@ namespace Horarium.Handlers
         private readonly IHorariumLogger _horariumLogger;
         private readonly IExecutorJob _executorJob;
         private Task _runnerTask;
+        private readonly IUncompletedTaskList _uncompletedTaskList;
 
         private CancellationToken _cancellationToken;
         private readonly CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
@@ -23,13 +24,15 @@ namespace Horarium.Handlers
         public RunnerJobs(IJobRepository jobRepository,
             HorariumSettings settings,
             JsonSerializerSettings jsonSerializerSettings,
-            IHorariumLogger horariumLogger, IExecutorJob executorJob)
+            IHorariumLogger horariumLogger, IExecutorJob executorJob,
+            IUncompletedTaskList uncompletedTaskList)
         {
             _jobRepository = jobRepository;
             _settings = settings;
             _jsonSerializerSettings = jsonSerializerSettings;
             _horariumLogger = horariumLogger;
             _executorJob = executorJob;
+            _uncompletedTaskList = uncompletedTaskList;
         }
 
         public void Start()
@@ -54,6 +57,8 @@ namespace Horarium.Handlers
             {
                 //watcher был остановлен
             }
+
+            await _uncompletedTaskList.WhenAllCompleted();
 
             _horariumLogger.Debug("Stopped DeleterJob");
         }
@@ -102,9 +107,9 @@ namespace Horarium.Handlers
                 if (job != null)
                 {
                     _horariumLogger.Debug("Try to Run jobMetadata...");
-#pragma warning disable 4014
-                    Task.Run(() => _executorJob.Execute(job), cancellationToken);
-#pragma warning restore 4014
+
+                    var jobTask = Task.Run(() => _executorJob.Execute(job), CancellationToken.None);
+                    _uncompletedTaskList.Add(jobTask);
                 }
 
                 if (cancellationToken.IsCancellationRequested)

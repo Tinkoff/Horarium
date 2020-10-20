@@ -69,17 +69,6 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-Start HorariumServer in Asp.NET Core application
-
-```csharp
-public void Configure(IApplicationBuilder app)
-{
-    //...
-    app.ApplicationServices.StartHorariumServer();
-    //...
-}
-```
-
 Inject interface ```IHorarium``` into Controller
 
 ```csharp

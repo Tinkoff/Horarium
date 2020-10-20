@@ -27,6 +27,8 @@ namespace Horarium.AspNetCore
                 return new HorariumServer(jobRepository, settings);
             });
 
+            service.AddHostedService<HorariumServerHostedService>();
+
             return service;
         }
         
@@ -50,12 +52,6 @@ namespace Horarium.AspNetCore
             });
 
             return service;
-        }
-
-        public static void StartHorariumServer(this IServiceProvider serviceProvider)
-        {
-            var server = (HorariumServer)serviceProvider.GetService<IHorarium>();
-            server.Start();
         }
 
         private static void PrepareSettings(HorariumSettings settings, IServiceProvider serviceProvider)
