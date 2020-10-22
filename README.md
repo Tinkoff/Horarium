@@ -58,7 +58,7 @@ Add nuget-package Horarium.AspNetCore
 dotnet add package Horarium.AspNetCore
 ```
 
-Add  ```Horarium```  in Asp.NET Core DI
+Add ```Horarium Server```. This regiters Horarium as a [hosted service](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services), so .Net core runtime automatically starts and gracefully stops Horarium.
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
