@@ -21,18 +21,20 @@ namespace Horarium.Handlers
 
         public void Add(Task task)
         {
+            LinkedListNode<Task> linkedListNode;
+
             lock (_lockObject)
             {
-                _uncompletedTasks.AddLast(task);
+                linkedListNode = _uncompletedTasks.AddLast(task);
             }
 
             task.ContinueWith((t, state) =>
             {
                 lock (_lockObject)
                 {
-                    _uncompletedTasks.Remove(task);
+                    _uncompletedTasks.Remove((LinkedListNode<Task>) state);
                 }
-            }, CancellationToken.None, TaskScheduler.Default);
+            }, linkedListNode, CancellationToken.None);
         }
 
         public async Task WhenAllCompleted()
