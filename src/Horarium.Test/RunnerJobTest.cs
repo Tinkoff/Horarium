@@ -23,7 +23,8 @@ namespace Horarium.Test
                 new HorariumSettings(),
                 new JsonSerializerSettings(),
                 Mock.Of<IHorariumLogger>(),
-                Mock.Of<IExecutorJob>());
+                Mock.Of<IExecutorJob>(),
+                Mock.Of<IUncompletedTaskList>());
 
             // Act
             runnerJobs.Start();
@@ -55,7 +56,8 @@ namespace Horarium.Test
                 settings,
                 new JsonSerializerSettings(),
                 Mock.Of<IHorariumLogger>(),
-                Mock.Of<IExecutorJob>());
+                Mock.Of<IExecutorJob>(),
+                Mock.Of<IUncompletedTaskList>());
 
             jobRepositoryMock.SetupSequence(x => x.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()))
                 .ThrowsAsync(new Exception())
@@ -84,7 +86,8 @@ namespace Horarium.Test
                 settings,
                 new JsonSerializerSettings(),
                 Mock.Of<IHorariumLogger>(),
-                Mock.Of<IExecutorJob>());
+                Mock.Of<IExecutorJob>(),
+                Mock.Of<IUncompletedTaskList>());
 
             jobRepositoryMock.SetupSequence(x => x.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()))
                 .ThrowsAsync(new Exception())
@@ -96,6 +99,70 @@ namespace Horarium.Test
 
             // Assert
             jobRepositoryMock.Verify(r => r.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task Start_NextJobStarted_AddsJobTaskToUncompletedTasks()
+        {
+            // Arrange
+            var jobRepositoryMock = new Mock<IJobRepository>();
+            var uncompletedTaskList = new Mock<IUncompletedTaskList>();
+
+            uncompletedTaskList.Setup(x => x.Add(It.IsAny<Task>()));
+
+            jobRepositoryMock.Setup(x => x.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()))
+                .ReturnsAsync(new JobDb
+                {
+                    JobType = typeof(object).ToString(),
+                });
+
+            var runnerJobs = new RunnerJobs(jobRepositoryMock.Object,
+                new HorariumSettings
+                {
+                    IntervalStartJob = TimeSpan.FromHours(1), // prevent second job from starting
+                },
+                new JsonSerializerSettings(),
+                Mock.Of<IHorariumLogger>(),
+                Mock.Of<IExecutorJob>(),
+                uncompletedTaskList.Object);
+
+            // Act
+            runnerJobs.Start();
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            await runnerJobs.Stop();
+
+            // Assert
+            uncompletedTaskList.Verify(x=>x.Add(It.IsAny<Task>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task StopAsync_AwaitsWhenAllCompleted()
+        {
+            // Arrange
+            var jobRepositoryMock = new Mock<IJobRepository>();
+            var uncompletedTaskList = new Mock<IUncompletedTaskList>();
+
+            var settings = new HorariumSettings
+            {
+                IntervalStartJob = TimeSpan.FromSeconds(2),
+            };
+
+            var runnerJobs = new RunnerJobs(jobRepositoryMock.Object,
+                settings,
+                new JsonSerializerSettings(),
+                Mock.Of<IHorariumLogger>(),
+                Mock.Of<IExecutorJob>(),
+                uncompletedTaskList.Object);
+
+            jobRepositoryMock.Setup(x => x.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()));
+
+            // Act
+            runnerJobs.Start();
+            await Task.Delay(TimeSpan.FromSeconds(1));
+            await runnerJobs.Stop();
+
+            // Assert
+            uncompletedTaskList.Verify(x => x.WhenAllCompleted(), Times.Once);
         }
     }
 }

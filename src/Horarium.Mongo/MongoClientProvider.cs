@@ -9,14 +9,15 @@ namespace Horarium.Mongo
     {
         private readonly ConcurrentDictionary<Type, string> _collectionNameCache = new ConcurrentDictionary<Type, string>();
 
-        private readonly Lazy<MongoClient> _mongoClient;
+        private readonly MongoClient _mongoClient;
         private readonly string _databaseName;
+        private bool _initialized;
+        private object _lockObject = new object();
 
         public MongoClientProvider(MongoUrl mongoUrl)
         {
             _databaseName = mongoUrl.DatabaseName;
-            _mongoClient = new Lazy<MongoClient>(() => new MongoClient(mongoUrl));
-            CreateIndexes();
+            _mongoClient = new MongoClient(mongoUrl);
         }
         
         public MongoClientProvider(string mongoConnectionString): this (new MongoUrl(mongoConnectionString))
@@ -35,8 +36,25 @@ namespace Horarium.Mongo
 
         public IMongoCollection<TEntity> GetCollection<TEntity>()
         {
+            EnsureInitialized();
+
             var collectionName = _collectionNameCache.GetOrAdd(typeof(TEntity), GetCollectionName);
-            return _mongoClient.Value.GetDatabase(_databaseName).GetCollection<TEntity>(collectionName);
+            return _mongoClient.GetDatabase(_databaseName).GetCollection<TEntity>(collectionName);
+        }
+
+        private void EnsureInitialized()
+        {
+            if (_initialized)
+                return;
+
+            lock (_lockObject)
+            {
+                if (_initialized)
+                    return;
+
+                _initialized = true;
+                CreateIndexes();
+            }
         }
 
         private void CreateIndexes()

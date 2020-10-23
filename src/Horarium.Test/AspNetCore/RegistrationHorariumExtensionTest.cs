@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Horarium.AspNetCore;
 using Horarium.Interfaces;
 using Horarium.Repository;
@@ -13,20 +14,14 @@ namespace Horarium.Test.AspNetCore
         [Fact]
         public void AddHorariumServer_DefaultSettings_ReplaceForAspNetCore()
         {
-            var serviceMock = new Mock<IServiceCollection>();
-
-            var service = serviceMock.Object;
-
-            ServiceDescriptor descriptor = null;
+            var service = new ServiceCollection();
 
             var settings = new HorariumSettings();
-
-            serviceMock.Setup(x => x.Add(It.IsAny<ServiceDescriptor>()))
-                .Callback<ServiceDescriptor>(x => descriptor = x);
 
             service.AddHorariumServer(Mock.Of<IJobRepository>(),
                 provider => settings);
 
+            var descriptor = service.Single(x => x.ServiceType == typeof(IHorarium));
             var horarium = descriptor.ImplementationFactory(Mock.Of<IServiceProvider>());
 
             Assert.Equal(ServiceLifetime.Singleton, descriptor.Lifetime);
@@ -34,6 +29,8 @@ namespace Horarium.Test.AspNetCore
             Assert.Equal(typeof(JobScopeFactory), settings.JobScopeFactory.GetType());
             Assert.Equal(typeof(HorariumLogger), settings.Logger.GetType());
             Assert.Equal(typeof(HorariumServer), horarium.GetType());
+
+            Assert.Contains(service, x => x.ImplementationType == typeof(HorariumServerHostedService));
         }
 
         [Fact]
