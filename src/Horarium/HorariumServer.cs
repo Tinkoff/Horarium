@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Horarium.Handlers;
 using Horarium.Interfaces;
@@ -39,14 +40,14 @@ namespace Horarium
             _runnerJobs.Start();
         }
 
-        public Task Stop()
+        public Task Stop(CancellationToken stopCancellationToken)
         {
-            return _runnerJobs.Stop();
+            return _runnerJobs.Stop(stopCancellationToken);
         }
 
         public new void Dispose()
         {
-            Stop();
+            Stop(CancellationToken.None);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Newtonsoft.Json;
@@ -31,7 +32,7 @@ namespace Horarium.Test
 
             await Task.Delay(TimeSpan.FromSeconds(1));
 
-            await runnerJobs.Stop();
+            await runnerJobs.Stop(CancellationToken.None);
 
             jobRepositoryMock.Invocations.Clear();
 
@@ -129,7 +130,7 @@ namespace Horarium.Test
             // Act
             runnerJobs.Start();
             await Task.Delay(TimeSpan.FromSeconds(5));
-            await runnerJobs.Stop();
+            await runnerJobs.Stop(CancellationToken.None);
 
             // Assert
             uncompletedTaskList.Verify(x=>x.Add(It.IsAny<Task>()), Times.Once);
@@ -141,6 +142,7 @@ namespace Horarium.Test
             // Arrange
             var jobRepositoryMock = new Mock<IJobRepository>();
             var uncompletedTaskList = new Mock<IUncompletedTaskList>();
+            var cancellationToken = new CancellationTokenSource().Token;
 
             var settings = new HorariumSettings
             {
@@ -159,10 +161,10 @@ namespace Horarium.Test
             // Act
             runnerJobs.Start();
             await Task.Delay(TimeSpan.FromSeconds(1));
-            await runnerJobs.Stop();
+            await runnerJobs.Stop(cancellationToken);
 
             // Assert
-            uncompletedTaskList.Verify(x => x.WhenAllCompleted(), Times.Once);
+            uncompletedTaskList.Verify(x => x.WhenAllCompleted(cancellationToken), Times.Once);
         }
     }
 }

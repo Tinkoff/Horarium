@@ -1,11 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Horarium.Interfaces
 {
     public interface IRunnerJobs
     {
         void Start();
-        Task Stop();
+
+        /// <summary>
+        /// Stops scheduling next jobs and awaits currently running jobs.
+        /// If <see cref="stopCancellationToken"></see> is cancelled, than abandons running jobs.
+        /// </summary>
+        Task Stop(CancellationToken stopCancellationToken);
 
     }
 }

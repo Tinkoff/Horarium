@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Horarium.Interfaces
@@ -15,6 +17,7 @@ namespace Horarium.Interfaces
         /// <summary>
         /// Returns task that will complete (with success) when all currently running tasks complete or fail.
         /// </summary>
-        Task WhenAllCompleted();
+        /// <param name="cancellationToken">If cancelled, throws <see cref="OperationCanceledException"/> immediately.</param>
+        Task WhenAllCompleted(CancellationToken cancellationToken);
     }
 }
