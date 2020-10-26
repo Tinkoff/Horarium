@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Horarium.Handlers;
 using Xunit;
@@ -39,7 +40,7 @@ namespace Horarium.Test
         public async Task WhenAllCompleted_NoTasks_ReturnsCompletedTask()
         {
             // Act
-            var whenAll = _uncompletedTaskList.WhenAllCompleted();
+            var whenAll = _uncompletedTaskList.WhenAllCompleted(CancellationToken.None);
 
             // Assert
             Assert.True(whenAll.IsCompletedSuccessfully);
@@ -54,7 +55,7 @@ namespace Horarium.Test
             _uncompletedTaskList.Add(tcs.Task);
 
             // Act
-            var whenAll = _uncompletedTaskList.WhenAllCompleted();
+            var whenAll = _uncompletedTaskList.WhenAllCompleted(CancellationToken.None);
 
             // Assert
             await Task.Delay(TimeSpan.FromSeconds(1)); // give a chance to finish any running tasks
@@ -74,9 +75,28 @@ namespace Horarium.Test
             _uncompletedTaskList.Add(Task.FromException(new ApplicationException()));
 
             // Act
-            var whenAll = _uncompletedTaskList.WhenAllCompleted();
+            var whenAll = _uncompletedTaskList.WhenAllCompleted(CancellationToken.None);
 
             await whenAll;
+        }
+
+        [Fact]
+        public async Task WhenAllCompleted_CancellationRequested_DoesNotAwait_ThrowsOperationCancelledException()
+        {
+            // Arrange
+            var tcs = new TaskCompletionSource<bool>();
+            var cts = new CancellationTokenSource();
+            _uncompletedTaskList.Add(tcs.Task);
+
+            // Act
+            var whenAll = _uncompletedTaskList.WhenAllCompleted(cts.Token);
+
+            // Assert
+            cts.Cancel();
+            await Task.Delay(TimeSpan.FromSeconds(1), CancellationToken.None); // give a chance to finish any running tasks
+
+            var exception = await Assert.ThrowsAsync<OperationCanceledException>(() => whenAll);
+            Assert.Equal(cts.Token, exception.CancellationToken);
         }
     }
 }

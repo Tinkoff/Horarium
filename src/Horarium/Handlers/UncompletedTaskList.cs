@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -37,23 +38,27 @@ namespace Horarium.Handlers
             }, linkedListNode, CancellationToken.None);
         }
 
-        public async Task WhenAllCompleted()
+        public async Task WhenAllCompleted(CancellationToken cancellationToken)
         {
             Task[] tasksToAwait;
             lock (_lockObject)
             {
-                tasksToAwait = _uncompletedTasks.ToArray();
+                tasksToAwait = _uncompletedTasks
+                    // get rid of fault state, Task.WhenAll shall not throw
+                    .Select(x => x.ContinueWith((t) => { }, CancellationToken.None))
+                    .ToArray();
             }
 
-            try
-            {
-                await Task.WhenAll(tasksToAwait);
-            }
-            catch
-            {
-                // We just want to have all task completed by now.
-                // Any possible exceptions must be handled in jobs.
-            }
+            var whenAbandon = Task.Delay(Timeout.Infinite, cancellationToken);
+            var whenAllCompleted = Task.WhenAll(tasksToAwait);
+
+            await Task.WhenAny(whenAbandon, whenAllCompleted);
+
+            if (cancellationToken.IsCancellationRequested)
+                throw new OperationCanceledException(
+                    "Horarium stop timeout is expired. One or many jobs are still running. These jobs may not save their state.",
+                    cancellationToken);
+
         }
     }
 }

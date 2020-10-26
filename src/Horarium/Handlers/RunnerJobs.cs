@@ -45,7 +45,7 @@ namespace Horarium.Handlers
             _horariumLogger.Debug("Started RunnerJob...");
         }
 
-        public async Task Stop()
+        public async Task Stop(CancellationToken stopCancellationToken)
         {
             _cancelTokenSource.Cancel(false);
 
@@ -58,7 +58,7 @@ namespace Horarium.Handlers
                 //watcher был остановлен
             }
 
-            await _uncompletedTaskList.WhenAllCompleted();
+            await _uncompletedTaskList.WhenAllCompleted(stopCancellationToken);
 
             _horariumLogger.Debug("Stopped DeleterJob");
         }

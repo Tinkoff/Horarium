@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Horarium.Interfaces;
@@ -23,7 +24,7 @@ namespace Horarium.AspNetCore
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            return _horariumServer.Stop();
+            return _horariumServer.Stop(cancellationToken);
         }
     }
 }
