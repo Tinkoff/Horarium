@@ -32,40 +32,71 @@ namespace Horarium.Mongo
             };
         }
 
-        [BsonId] 
+        [BsonId]
+        [BsonRepresentation(BsonType.String)]
         public string JobId { get; set; }
 
+        [BsonRepresentation(BsonType.String)]
+        [BsonElement("JobKey")]
         public string JobKey { get; set; }
 
+        [BsonRepresentation(BsonType.String)]
+        [BsonElement("JobType")]
         public string JobType { get; set; }
 
+        [BsonRepresentation(BsonType.String)]
+        [BsonElement("JobParamType")]
         public string JobParamType { get; set; }
 
+        [BsonRepresentation(BsonType.String)]
+        [BsonElement("JobParam")]
         public string JobParam { get; set; }
 
+        [BsonRepresentation(BsonType.Int32)]
+        [BsonElement("Status")]
         public JobStatus Status { get; set; }
 
+        [BsonRepresentation(BsonType.Int32)]
+        [BsonElement("CountStarted")]
         public int CountStarted { get; set; }
 
+        [BsonRepresentation(BsonType.String)]
+        [BsonElement("ExecutedMachine")]
         public string ExecutedMachine { get; set; }
 
+        [BsonDateTimeOptions(Kind = DateTimeKind.Utc, DateOnly = false, Representation = BsonType.DateTime)]
+        [BsonElement("StartedExecuting")]
         public DateTime StartedExecuting { get; set; }
 
+        [BsonDateTimeOptions(Kind = DateTimeKind.Utc, DateOnly = false, Representation = BsonType.DateTime)]
+        [BsonElement("StartAt")]
         public DateTime StartAt { get; set; }
 
+        [BsonElement("NextJob")]
         public JobMongoModel NextJob { get; set; }
 
+        [BsonRepresentation(BsonType.String)]
+        [BsonElement("Error")]
         public string Error { get; set; }
 
+        [BsonRepresentation(BsonType.String)]
+        [BsonElement("Cron")]
         public string Cron { get; set; }
 
+        [BsonTimeSpanOptions(BsonType.String)]
+        [BsonElement("Delay")]
         public TimeSpan? Delay { get; set; }
 
         [BsonTimeSpanOptions(BsonType.Int64, TimeSpanUnits.Milliseconds)]
+        [BsonElement("ObsoleteInterval")]
         public TimeSpan ObsoleteInterval { get; set; }
-        
+
+        [BsonRepresentation(BsonType.String)]
+        [BsonElement("RepeatStrategy")]
         public string RepeatStrategy { get; set; }
-        
+
+        [BsonRepresentation(BsonType.Int32)]
+        [BsonElement("MaxRepeatCount")]
         public int MaxRepeatCount { get; set; }
 
         public static JobMongoModel CreateJobMongoModel(JobDb jobDb)

@@ -1,4 +1,5 @@
 ﻿using Horarium.Repository;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Horarium.Mongo
@@ -17,10 +18,15 @@ namespace Horarium.Mongo
         }
         
         [BsonId]
+        [BsonRepresentation(BsonType.String)]
         public string JobKey { get; private set; }
 
+        [BsonRepresentation(BsonType.String)]
+        [BsonElement("JobType")]
         public string JobType { get; private set; }
-        
+
+        [BsonRepresentation(BsonType.String)]
+        [BsonElement("Cron")]
         public string Cron { get; private set; }
     }
 }
