@@ -9,7 +9,7 @@ namespace Horarium.Interfaces
 
         /// <summary>
         /// Stops scheduling next jobs and awaits currently running jobs.
-        /// If <see cref="stopCancellationToken"></see> is cancelled, than abandons running jobs.
+        /// If <see cref="stopCancellationToken"></see> is cancelled, then abandons running jobs.
         /// </summary>
         Task Stop(CancellationToken stopCancellationToken);
 
