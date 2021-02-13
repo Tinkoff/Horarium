@@ -117,8 +117,7 @@ namespace Horarium.Mongo
                 .Set(x => x.StartAt, startAt)
                 .Set(x => x.Status, JobStatus.Ready)
                 .Set(x => x.Error, error.Message + error.StackTrace);
-
-
+            
             await IMongoCollectionExtensions.UpdateOneAsync(collection, x => x.JobId == jobId,
                 update);
         }
