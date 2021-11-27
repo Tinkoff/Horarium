@@ -161,12 +161,8 @@ namespace Horarium.Test
                 settings,
                 new JsonSerializerSettings(),
                 Mock.Of<IHorariumLogger>(),
-<<<<<<< HEAD
                 Mock.Of<IExecutorJob>(),
                 Mock.Of<IUncompletedTaskList>());
-=======
-                Mock.Of<IExecutorJob>());
->>>>>>> f47d280 (Add unit tests)
 
             // Act
             runnerJobs.Start();
@@ -180,19 +176,11 @@ namespace Horarium.Test
             await Task.Delay(interval);
             interval += settings.IntervalStartJob.Multiply(settings.JobThrottleSettings.IntervalMultiplier);
             await Task.Delay(interval);
-<<<<<<< HEAD
 
-            // Assert
-            jobRepositoryMock.Verify(r => r.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Exactly(3));
-        }
-
-=======
-           
             // Assert
             jobRepositoryMock.Verify(r => r.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Exactly(3));
         }
         
->>>>>>> f47d280 (Add unit tests)
         [Fact]
         public async Task Start_ExecutionWithDelay_MaxInterval()
         {
@@ -218,12 +206,8 @@ namespace Horarium.Test
                 settings,
                 new JsonSerializerSettings(),
                 Mock.Of<IHorariumLogger>(),
-<<<<<<< HEAD
                 Mock.Of<IExecutorJob>(),
                 Mock.Of<IUncompletedTaskList>());
-=======
-                Mock.Of<IExecutorJob>());
->>>>>>> f47d280 (Add unit tests)
 
             // Act
             runnerJobs.Start();
@@ -231,16 +215,10 @@ namespace Horarium.Test
             jobRepositoryMock.Invocations.Clear();
 
             await Task.Delay(TimeSpan.FromSeconds(5));
-<<<<<<< HEAD
-
-=======
-           
->>>>>>> f47d280 (Add unit tests)
             // Assert
             jobRepositoryMock.Verify(r => r.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Exactly(5));
         }
 
-<<<<<<< HEAD
         [Fact]
         public async Task Start_NextJobStarted_AddsJobTaskToUncompletedTasks()
         {
@@ -305,7 +283,5 @@ namespace Horarium.Test
             // Assert
             uncompletedTaskList.Verify(x => x.WhenAllCompleted(cancellationToken), Times.Once);
         }
-=======
->>>>>>> f47d280 (Add unit tests)
     }
 }
