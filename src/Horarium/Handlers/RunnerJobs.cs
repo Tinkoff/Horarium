@@ -137,14 +137,14 @@ namespace Horarium.Handlers
                     throw new TaskCanceledException();
                 }
 
-                if (isJobReady)
-                {
-                    return true;
-                }
-
                 if (!waitTime.Equals(TimeSpan.Zero))
                 {
                     await Task.Delay(waitTime, cancellationToken);
+                }
+                
+                if (isJobReady)
+                {
+                    return true;
                 }
             }
 
