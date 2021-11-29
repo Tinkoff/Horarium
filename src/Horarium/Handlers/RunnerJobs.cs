@@ -17,6 +17,8 @@ namespace Horarium.Handlers
         private readonly IExecutorJob _executorJob;
         private Task _runnerTask;
         private readonly IUncompletedTaskList _uncompletedTaskList;
+        
+        private readonly TimeSpan _defaultJobThrottleInterval = TimeSpan.FromMilliseconds(100);
 
         private CancellationToken _cancellationToken;
         private readonly CancellationTokenSource _cancelTokenSource = new CancellationTokenSource();
@@ -100,11 +102,29 @@ namespace Horarium.Handlers
 
         private async Task StartRunnerInternal(CancellationToken cancellationToken)
         {
+            var jobWaitTime = _settings.IntervalStartJob;
+
             while (true)
             {
-                var job = await GetReadyJob();
+                var isJobRan = await TryRunJob(cancellationToken, jobWaitTime);
+                if (!_settings.JobThrottleSettings.UseJobThrottle)
+                {
+                    jobWaitTime = _settings.IntervalStartJob;
+                    continue;
+                }
 
-                if (job != null)
+                jobWaitTime = !isJobRan ? GetNextIntervalStartJob(jobWaitTime) : _settings.IntervalStartJob;
+            }
+        }
+        
+        private async Task<bool> TryRunJob(CancellationToken cancellationToken, TimeSpan waitTime)
+        {
+            for (var i = 0; i < _settings.JobThrottleSettings.JobRetrievalAttempts; i++)
+            {
+                var job = await GetReadyJob();
+                var isJobReady = job != null;
+
+                if (isJobReady)
                 {
                     _horariumLogger.Debug("Try to Run jobMetadata...");
 
@@ -117,11 +137,34 @@ namespace Horarium.Handlers
                     throw new TaskCanceledException();
                 }
 
-                if (!_settings.IntervalStartJob.Equals(TimeSpan.Zero))
+                if (isJobReady)
                 {
-                    await Task.Delay(_settings.IntervalStartJob, cancellationToken);
+                    return true;
+                }
+
+                if (!waitTime.Equals(TimeSpan.Zero))
+                {
+                    await Task.Delay(waitTime, cancellationToken);
                 }
             }
+
+            return false;
+        }
+
+        private TimeSpan GetNextIntervalStartJob(TimeSpan currentInterval)
+        {
+            if (currentInterval.Equals(TimeSpan.Zero))
+            {
+                return _defaultJobThrottleInterval;
+            }
+
+            var nextInterval =
+                currentInterval +
+                TimeSpan.FromTicks((long) (currentInterval.Ticks * _settings.JobThrottleSettings.IntervalMultiplier));
+
+            var maxInterval = _settings.JobThrottleSettings.MaxJobThrottleInterval;
+
+            return nextInterval > maxInterval ? maxInterval : nextInterval;
         }
     }
 }
