@@ -43,7 +43,7 @@ namespace Horarium
             return _statisticsJobs.GetJobStatistic();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
         }
     }

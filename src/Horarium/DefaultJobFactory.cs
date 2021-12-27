@@ -10,7 +10,7 @@ namespace Horarium
             return new DefaultJobScope();
         }
 
-        public class DefaultJobScope : IJobScope
+        private sealed class DefaultJobScope : IJobScope
         {
             public object CreateJob(Type type)
             {

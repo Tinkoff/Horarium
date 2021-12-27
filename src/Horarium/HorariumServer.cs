@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Horarium.Handlers;
@@ -45,7 +44,7 @@ namespace Horarium
             return _runnerJobs.Stop(stopCancellationToken);
         }
 
-        public new void Dispose()
+        public override void Dispose()
         {
             Stop(CancellationToken.None);
         }
