@@ -1,4 +1,5 @@
 ﻿using System;
+using Horarium.Fallbacks;
 using Newtonsoft.Json;
 
 namespace Horarium.Repository
@@ -25,7 +26,9 @@ namespace Horarium.Repository
                 Delay = jobMetadata.Delay,
                 ObsoleteInterval = jobMetadata.ObsoleteInterval,
                 RepeatStrategy = jobMetadata.RepeatStrategy?.AssemblyQualifiedNameWithoutVersion(),
-                MaxRepeatCount = jobMetadata.MaxRepeatCount
+                MaxRepeatCount = jobMetadata.MaxRepeatCount,
+                FallbackStrategyType = jobMetadata.FallbackStrategyType,
+                FallbackJob = jobMetadata.FallbackJob != null ? CreatedJobDb(jobMetadata.FallbackJob, jsonSerializerSettings) : null,
             };
         }
 
@@ -62,6 +65,10 @@ namespace Horarium.Repository
         public string RepeatStrategy { get; set; }
 
         public int MaxRepeatCount { get; set; }
+        
+        public FallbackStrategyTypeEnum? FallbackStrategyType { get; set; }
+        
+        public JobDb FallbackJob { get; set; }
 
         public JobMetadata ToJob(JsonSerializerSettings jsonSerializerSettings)
         {
@@ -81,7 +88,9 @@ namespace Horarium.Repository
                 Delay = Delay,
                 ObsoleteInterval = ObsoleteInterval,
                 RepeatStrategy = string.IsNullOrEmpty(RepeatStrategy) ? null : Type.GetType(RepeatStrategy, true),
-                MaxRepeatCount = MaxRepeatCount
+                MaxRepeatCount = MaxRepeatCount,
+                FallbackStrategyType = FallbackStrategyType,
+                FallbackJob = FallbackJob?.ToJob(jsonSerializerSettings)
             };
         }
     }

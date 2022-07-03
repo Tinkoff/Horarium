@@ -1,4 +1,5 @@
 ﻿using System;
+using Horarium.Fallbacks;
 
 namespace Horarium
 {
@@ -33,5 +34,9 @@ namespace Horarium
         public Type RepeatStrategy { get; set; }
         
         public int MaxRepeatCount { get; set; }
+        
+        public FallbackStrategyTypeEnum? FallbackStrategyType { get; set; }
+        
+        public JobMetadata FallbackJob { get; set; }
     }
 }

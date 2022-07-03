@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Horarium.Fallbacks;
 using Horarium.Interfaces;
 
 namespace Horarium.Builders.Parameterized
@@ -48,6 +49,21 @@ namespace Horarium.Builders.Parameterized
             return this;
         }
 
+        public IParameterizedJobBuilder AddFallbackConfiguration(Action<IFallbackStrategyOptions> configure)
+        {
+            var options = new FallbackStrategyOptions(_globalObsoleteInterval);
+            if (configure == null)
+            {
+                return this;
+            }
+            configure(options);
+            
+            Job.FallbackStrategyType = options.FallbackStrategyType;
+            Job.FallbackJob = options.FallbackJobMetadata;
+
+            return this;
+        }
+
         public IParameterizedJobBuilder AddRepeatStrategy<TRepeat>() where TRepeat : IFailedRepeatStrategy
         {
             Job.RepeatStrategy = typeof(TRepeat);
@@ -66,29 +82,9 @@ namespace Horarium.Builders.Parameterized
 
         public override Task Schedule()
         {
-            var job = _jobsQueue.Dequeue();
-
-            FillWithDefaultIfNecessary(job);
-            var previous = job;
-
-            while (_jobsQueue.Any())
-            {
-                previous.NextJob = _jobsQueue.Dequeue();
-                previous = previous.NextJob;
-                FillWithDefaultIfNecessary(previous);
-            }
+            var job = JobBuilderHelpers.BuildJobsSequence(_jobsQueue, _globalObsoleteInterval);
 
             return _adderJobs.AddEnqueueJob(job);
-        }
-
-        private void FillWithDefaultIfNecessary(JobMetadata job)
-        {
-            job.Delay = job.Delay ?? TimeSpan.Zero;
-            job.StartAt = DateTime.UtcNow + job.Delay.Value;
-
-            job.ObsoleteInterval = job.ObsoleteInterval == default(TimeSpan)
-                ? _globalObsoleteInterval
-                : job.ObsoleteInterval;
         }
     }
 }

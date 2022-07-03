@@ -7,6 +7,7 @@ using Horarium.Interfaces;
 using Horarium.Repository;
 using Newtonsoft.Json;
 using Horarium.Builders.Recurrent;
+using Horarium.Fallbacks;
 
 namespace Horarium.Handlers
 {
@@ -59,17 +60,9 @@ namespace Horarium.Handlers
                     _settings.Logger.Debug("got JobParam -" + jobMetadata.JobParam.GetType());
                     await jobImplementation.Execute((dynamic) jobMetadata.JobParam);
 
-                    _settings.Logger.Debug("jobMetadata excecuted");
+                    _settings.Logger.Debug("jobMetadata executed");
 
-                    if (jobMetadata.NextJob != null)
-                    {
-                        jobMetadata.NextJob.StartAt = DateTime.UtcNow + jobMetadata.NextJob.Delay.GetValueOrDefault();
-
-                        await _jobRepository.AddJob(JobDb.CreatedJobDb(jobMetadata.NextJob,
-                            _settings.JsonSerializerSettings));
-
-                        _settings.Logger.Debug("next jobMetadata added");
-                    }
+                    await ScheduleNextJobIfExists(jobMetadata);
 
                     await _jobRepository.RemoveJob(jobMetadata.JobId);
 
@@ -142,6 +135,8 @@ namespace Horarium.Handlers
                     }
                 }
 
+                await HandleFallbackStrategy(jobMetadata);
+
                 await _jobRepository.FailedJob(jobMetadata.JobId, ex);
                 _settings.Logger.Debug("jobMetadata saved failed");
             }
@@ -175,6 +170,51 @@ namespace Horarium.Handlers
             await new RecurrentJobBuilder(_adderJobs, cron, metadata.JobType, metadata.ObsoleteInterval)
                 .WithKey(metadata.JobKey)
                 .Schedule();
+        }
+
+        private async Task ScheduleNextJobIfExists(JobMetadata metadata)
+        {
+            if (metadata.NextJob == null)
+            {
+                return;
+            }
+            
+            await ScheduleJob(metadata.NextJob);
+            _settings.Logger.Debug("next jobMetadata added");
+        }
+
+        private async Task ScheduleFallbackJobIfExists(JobMetadata metadata)
+        {
+            if (metadata.FallbackJob == null)
+            {
+                return;
+            }
+            
+            await ScheduleJob(metadata.FallbackJob);
+            _settings.Logger.Debug("fallback jobMetadata added");
+
+        }
+
+        private async Task ScheduleJob(JobMetadata metadata)
+        {
+            metadata.StartAt = DateTime.UtcNow + metadata.Delay.GetValueOrDefault();
+
+            await _jobRepository.AddJob(JobDb.CreatedJobDb(metadata, _settings.JsonSerializerSettings));
+        }
+
+        private Task HandleFallbackStrategy(JobMetadata metadata)
+        {
+            switch (metadata.FallbackStrategyType)
+            {
+                case FallbackStrategyTypeEnum.GoNext:
+                    return ScheduleNextJobIfExists(metadata);
+                case FallbackStrategyTypeEnum.ScheduleFallbackJob:
+                    return ScheduleFallbackJobIfExists(metadata);
+                case null:
+                case FallbackStrategyTypeEnum.StopExecuting:
+                default:
+                    return Task.CompletedTask;
+            }
         }
     }
 }

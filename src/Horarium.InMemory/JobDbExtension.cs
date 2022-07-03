@@ -23,8 +23,9 @@ namespace Horarium.InMemory
                 Delay = source.Delay,
                 ObsoleteInterval = source.ObsoleteInterval,
                 RepeatStrategy = source.RepeatStrategy,
-                MaxRepeatCount = source.MaxRepeatCount
-                
+                MaxRepeatCount = source.MaxRepeatCount,
+                FallbackJob = source.FallbackJob?.Copy(),
+                FallbackStrategyType = source.FallbackStrategyType
             };
         }
     }

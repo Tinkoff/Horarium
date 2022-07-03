@@ -21,13 +21,7 @@ namespace Horarium.Builders
 
         private void GenerateNewJob(Type jobType)
         {
-            Job = new JobMetadata
-            {
-                JobId = Guid.NewGuid().ToString("N"),
-                JobType = jobType,
-                Status = JobStatus.Ready,
-                CountStarted = 0
-            }; 
+            Job = JobBuilderHelpers.GenerateNewJob(jobType);
         }
     }
 }

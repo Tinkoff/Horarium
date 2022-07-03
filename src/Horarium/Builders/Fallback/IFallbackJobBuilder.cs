@@ -1,10 +1,10 @@
-using System;
-using Horarium.Fallbacks;
+﻿using System;
+using Horarium.Builders.Parameterized;
 using Horarium.Interfaces;
 
-namespace Horarium.Builders.Parameterized
+namespace Horarium.Builders.Fallback
 {
-    public interface IParameterizedJobBuilder : IJobBuilder, IDelayedJobBuilder<IParameterizedJobBuilder>
+    public interface IFallbackJobBuilder 
     {
         /// <summary>
         /// Create next job, it run after previous job
@@ -13,27 +13,27 @@ namespace Horarium.Builders.Parameterized
         /// <typeparam name="TJob"></typeparam>
         /// <typeparam name="TJobParam"></typeparam>
         /// <returns></returns>
-        IParameterizedJobBuilder Next<TJob, TJobParam>(TJobParam parameters) where TJob : IJob<TJobParam>;
+        IFallbackJobBuilder Next<TJob, TJobParam>(TJobParam parameters) where TJob : IJob<TJobParam>;
 
         /// <summary>
         /// Add custom failed repeat strategy for job
         /// </summary>
         /// <typeparam name="TRepeat"></typeparam>
         /// <returns></returns>
-        IParameterizedJobBuilder AddRepeatStrategy<TRepeat>() where TRepeat : IFailedRepeatStrategy;
+        IFallbackJobBuilder AddRepeatStrategy<TRepeat>() where TRepeat : IFailedRepeatStrategy;
         
         /// <summary>
         /// Set custom max failed repeat count
         /// </summary>
         /// <param name="count">min value is 1, it's mean this job start only one time</param>
         /// <returns></returns>
-        IParameterizedJobBuilder MaxRepeatCount(int count);
-
+        IFallbackJobBuilder MaxRepeatCount(int count);
+        
         /// <summary>
-        /// Add custom fallback configuration for job
+        /// Set delay for start this job
         /// </summary>
-        /// <param name="configure"></param>
+        /// <param name="delay"></param>
         /// <returns></returns>
-        IParameterizedJobBuilder AddFallbackConfiguration(Action<IFallbackStrategyOptions> configure);
+        IFallbackJobBuilder WithDelay(TimeSpan delay);
     }
 }
