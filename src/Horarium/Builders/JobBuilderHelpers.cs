@@ -28,7 +28,7 @@ namespace Horarium.Builders
             {
                 previous.NextJob = jobsQueue.Dequeue();
                 previous = previous.NextJob;
-                FillWithDefaultIfNecessary(job, globalObsoleteInterval);
+                FillWithDefaultIfNecessary(previous, globalObsoleteInterval);
             }
 
             return job;
