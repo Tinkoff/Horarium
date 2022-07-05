@@ -1,10 +1,11 @@
 ﻿using System;
 using Horarium.Builders.Parameterized;
+using Horarium.Fallbacks;
 using Horarium.Interfaces;
 
 namespace Horarium.Builders.Fallback
 {
-    public interface IFallbackJobBuilder 
+    public interface IFallbackJobBuilder
     {
         /// <summary>
         /// Create next job, it run after previous job
@@ -35,5 +36,12 @@ namespace Horarium.Builders.Fallback
         /// <param name="delay"></param>
         /// <returns></returns>
         IFallbackJobBuilder WithDelay(TimeSpan delay);
+        
+        /// <summary>
+        /// Add custom fallback configuration for job
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        IFallbackJobBuilder AddFallbackConfiguration(Action<IFallbackStrategyOptions> configure);
     }
 }

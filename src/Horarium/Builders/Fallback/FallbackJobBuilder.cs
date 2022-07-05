@@ -32,6 +32,21 @@ namespace Horarium.Builders.Fallback
             return this;
         }
 
+        public IFallbackJobBuilder AddFallbackConfiguration(Action<IFallbackStrategyOptions> configure)
+        {
+            var options = new FallbackStrategyOptions(_globalObsoleteInterval);
+            if (configure == null)
+            {
+                return this;
+            }
+            configure(options);
+            
+            _job.FallbackStrategyType = options.FallbackStrategyType;
+            _job.FallbackJob = options.FallbackJobMetadata;
+
+            return this;
+        }
+
         public IFallbackJobBuilder Next<TNextJob, TNextJobParam>(TNextJobParam parameters)
             where TNextJob : IJob<TNextJobParam>
         {
