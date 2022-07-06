@@ -25,7 +25,7 @@ namespace Horarium.IntegrationTest
                           .MaxRepeatCount(mainJobRepeatCount)
                           .AddRepeatStrategy<FallbackRepeatStrategy>()
                           .AddFallbackConfiguration(configure =>
-                                                        configure.CreateFallbackJob<FallbackJob, int>(
+                                                        configure.ScheduleFallbackJob<FallbackJob, int>(
                                                             2,
                                                             builder =>
                                                             {

@@ -17,7 +17,7 @@ namespace Horarium.Fallbacks
             _globalObsoleteInterval = globalObsoleteInterval;
         }
         
-        public void CreateFallbackJob<TJob, TJobParam>(TJobParam parameters, Action<IFallbackJobBuilder> fallbackJobConfigure = null) where TJob : IJob<TJobParam>
+        public void ScheduleFallbackJob<TJob, TJobParam>(TJobParam parameters, Action<IFallbackJobBuilder> fallbackJobConfigure = null) where TJob : IJob<TJobParam>
         {
             FallbackStrategyType = FallbackStrategyTypeEnum.ScheduleFallbackJob;
             

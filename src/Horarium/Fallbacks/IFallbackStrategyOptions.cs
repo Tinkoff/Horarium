@@ -6,7 +6,7 @@ namespace Horarium.Fallbacks
 {
     public interface IFallbackStrategyOptions
     {
-        void CreateFallbackJob<TJob, TJobParam>(TJobParam parameters, Action<IFallbackJobBuilder> fallbackJobConfigure = null)
+        void ScheduleFallbackJob<TJob, TJobParam>(TJobParam parameters, Action<IFallbackJobBuilder> fallbackJobConfigure = null)
             where TJob : IJob<TJobParam>;
 
         void StopExecution();

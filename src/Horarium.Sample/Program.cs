@@ -41,7 +41,7 @@ namespace Horarium.Sample
                 .AddFallbackConfiguration(x=>x.GoToNextJob()) // execution continues after all attempts
                 .Next<FailedTestJob, int>(5) // 5-th job job failed with exception
                 .MaxRepeatCount(1)
-                .AddFallbackConfiguration(x=>x.CreateFallbackJob<FallbackTestJob, int>(6, builder =>
+                .AddFallbackConfiguration(x=>x.ScheduleFallbackJob<FallbackTestJob, int>(6, builder =>
                 {
                     builder.Next<TestJob, int>(7);
                 })) // 6-th and 7-th jobs executes after all retries 
