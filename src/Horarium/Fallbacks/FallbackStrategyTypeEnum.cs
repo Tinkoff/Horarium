@@ -2,8 +2,8 @@
 {
     public enum FallbackStrategyTypeEnum
     {
-        GoNext = 1,
+        StopExecution = 0,
+        GoToNextJob = 1,
         ScheduleFallbackJob = 2,
-        StopExecuting = 3,
     }
 }

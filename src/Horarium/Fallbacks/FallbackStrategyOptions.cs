@@ -29,12 +29,12 @@ namespace Horarium.Fallbacks
 
         public void StopExecution()
         {
-            FallbackStrategyType = FallbackStrategyTypeEnum.StopExecuting;
+            FallbackStrategyType = FallbackStrategyTypeEnum.StopExecution;
         }
 
-        public void GoNext()
+        public void GoToNextJob()
         {
-            FallbackStrategyType = FallbackStrategyTypeEnum.GoNext;
+            FallbackStrategyType = FallbackStrategyTypeEnum.GoToNextJob;
         }
     }
 }

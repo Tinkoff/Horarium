@@ -8,6 +8,13 @@ namespace Horarium.IntegrationTest
     [Collection(IntegrationTestCollection)]
     public class FallbackJobTest : IntegrationTestBase
     {
+        public FallbackJobTest()
+        {
+            FallbackNextJob.ExecutedCount = 0;
+            FallbackMainJob.ExecutedCount = 0;
+            FallbackJob.ExecutedCount = 0;
+        }
+        
         [Fact]
         public async Task FallbackJobAdded_FallbackJobExecuted()
         {
@@ -30,17 +37,9 @@ namespace Horarium.IntegrationTest
 
             horarium.Dispose();
 
-            var mainExecuted = FallbackMainJob.ExecutedCount;
-            var fallbackExecuted = FallbackJob.ExecutedCount;
-            var nextExecuted = FallbackNextJob.ExecutedCount;
-
-            FallbackMainJob.ExecutedCount = 0;
-            FallbackJob.ExecutedCount = 0;
-            FallbackNextJob.ExecutedCount = 0;
-
-            Assert.Equal(mainJobRepeatCount, mainExecuted);
-            Assert.Equal(1, fallbackExecuted);
-            Assert.Equal(1, nextExecuted);
+            Assert.Equal(mainJobRepeatCount, FallbackMainJob.ExecutedCount);
+            Assert.Equal(1, FallbackJob.ExecutedCount);
+            Assert.Equal(1, FallbackNextJob.ExecutedCount);
         }
         
         [Fact]
@@ -52,22 +51,16 @@ namespace Horarium.IntegrationTest
             await horarium.Create<FallbackMainJob, int>(1)
                           .MaxRepeatCount(mainJobRepeatCount)
                           .AddRepeatStrategy<FallbackRepeatStrategy>()
-                          .AddFallbackConfiguration(configure => configure.GoNext())
+                          .AddFallbackConfiguration(configure => configure.GoToNextJob())
                           .Next<FallbackNextJob, int>(2)
                           .Schedule();
             
             await Task.Delay(7000);
 
             horarium.Dispose();
-            
-            var mainExecuted = FallbackMainJob.ExecutedCount;
-            var nextExecuted = FallbackNextJob.ExecutedCount;
 
-            FallbackMainJob.ExecutedCount = 0;
-            FallbackNextJob.ExecutedCount = 0;
-            
-            Assert.Equal(mainJobRepeatCount,  mainExecuted);
-            Assert.Equal(1, nextExecuted);
+            Assert.Equal(mainJobRepeatCount,  FallbackMainJob.ExecutedCount);
+            Assert.Equal(1, FallbackNextJob.ExecutedCount);
         }
     }
 }

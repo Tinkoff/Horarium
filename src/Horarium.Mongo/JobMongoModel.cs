@@ -105,7 +105,7 @@ namespace Horarium.Mongo
         [BsonElement("FallbackJob")]
         public JobMongoModel FallbackJob { get; set; }
         
-        [BsonRepresentation(BsonType.Int32)]
+        [BsonRepresentation(BsonType.String)]
         [BsonElement("FallbackStrategyType")]
         public FallbackStrategyTypeEnum? FallbackStrategyType { get; set; }
 

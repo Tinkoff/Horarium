@@ -38,7 +38,7 @@ namespace Horarium.Sample
                 .Next<FailedTestJob, int>(4) // 4-th job failed with exception
                 .AddRepeatStrategy<CustomRepeatStrategy>()
                 .MaxRepeatCount(3)
-                .AddFallbackConfiguration(x=>x.GoNext()) // execution continues after all attempts
+                .AddFallbackConfiguration(x=>x.GoToNextJob()) // execution continues after all attempts
                 .Next<FailedTestJob, int>(5) // 5-th job job failed with exception
                 .MaxRepeatCount(1)
                 .AddFallbackConfiguration(x=>x.CreateFallbackJob<FallbackTestJob, int>(6, builder =>

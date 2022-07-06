@@ -11,6 +11,6 @@ namespace Horarium.Fallbacks
 
         void StopExecution();
 
-        void GoNext();
+        void GoToNextJob();
     }
 }

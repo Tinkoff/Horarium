@@ -192,7 +192,6 @@ namespace Horarium.Handlers
             
             await ScheduleJob(metadata.FallbackJob);
             _settings.Logger.Debug("fallback jobMetadata added");
-
         }
 
         private async Task ScheduleJob(JobMetadata metadata)
@@ -206,12 +205,12 @@ namespace Horarium.Handlers
         {
             switch (metadata.FallbackStrategyType)
             {
-                case FallbackStrategyTypeEnum.GoNext:
+                case FallbackStrategyTypeEnum.GoToNextJob:
                     return ScheduleNextJobIfExists(metadata);
                 case FallbackStrategyTypeEnum.ScheduleFallbackJob:
                     return ScheduleFallbackJobIfExists(metadata);
                 case null:
-                case FallbackStrategyTypeEnum.StopExecuting:
+                case FallbackStrategyTypeEnum.StopExecution:
                 default:
                     return Task.CompletedTask;
             }
