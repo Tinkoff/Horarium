@@ -21,18 +21,20 @@ namespace Horarium.IntegrationTest
             var horarium = CreateHorariumServer();
 
             var mainJobRepeatCount = 2;
-            await horarium.Create<FallbackMainJob, int>(1)
-                          .MaxRepeatCount(mainJobRepeatCount)
-                          .AddRepeatStrategy<FallbackRepeatStrategy>()
-                          .AddFallbackConfiguration(configure =>
-                                                        configure.ScheduleFallbackJob<FallbackJob, int>(
-                                                            2,
-                                                            builder =>
-                                                            {
-                                                                builder.Next<FallbackNextJob, int>(3);
-                                                            }))
-                          .Schedule();
-            
+            await horarium.Schedule<FallbackMainJob, int>(1, conf => 
+                                                              conf.MaxRepeatCount(mainJobRepeatCount)
+                                                                  .AddRepeatStrategy<FallbackRepeatStrategy>()
+                                                                  .AddFallbackConfiguration(configure =>
+                                                                      configure
+                                                                          .ScheduleFallbackJob<FallbackJob, int>(
+                                                                              2,
+                                                                              builder =>
+                                                                              {
+                                                                                  builder
+                                                                                      .Next<FallbackNextJob,
+                                                                                          int>(3);
+                                                                              })));
+
             await Task.Delay(7000);
 
             horarium.Dispose();
@@ -48,12 +50,13 @@ namespace Horarium.IntegrationTest
             var horarium = CreateHorariumServer();
 
             var mainJobRepeatCount = 2;
-            await horarium.Create<FallbackMainJob, int>(1)
-                          .MaxRepeatCount(mainJobRepeatCount)
-                          .AddRepeatStrategy<FallbackRepeatStrategy>()
-                          .AddFallbackConfiguration(configure => configure.GoToNextJob())
-                          .Next<FallbackNextJob, int>(2)
-                          .Schedule();
+            await horarium.Schedule<FallbackMainJob, int>(1, conf => 
+                                                              conf.MaxRepeatCount(mainJobRepeatCount)
+                                                                  .AddRepeatStrategy<FallbackRepeatStrategy>()
+                                                                  .AddFallbackConfiguration(
+                                                                      configure => configure.GoToNextJob())
+                                                                  .Next<FallbackNextJob, int>(2)
+            );
             
             await Task.Delay(7000);
 

@@ -4,6 +4,7 @@ using Horarium.Interfaces;
 
 namespace Horarium.Builders.Parameterized
 {
+    [Obsolete("use IJobSequenceBuilder instead")]
     public interface IParameterizedJobBuilder : IJobBuilder, IDelayedJobBuilder<IParameterizedJobBuilder>
     {
         /// <summary>
@@ -28,12 +29,5 @@ namespace Horarium.Builders.Parameterized
         /// <param name="count">min value is 1, it's mean this job start only one time</param>
         /// <returns></returns>
         IParameterizedJobBuilder MaxRepeatCount(int count);
-
-        /// <summary>
-        /// Add custom fallback configuration for job
-        /// </summary>
-        /// <param name="configure"></param>
-        /// <returns></returns>
-        IParameterizedJobBuilder AddFallbackConfiguration(Action<IFallbackStrategyOptions> configure);
     }
 }

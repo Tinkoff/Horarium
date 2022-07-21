@@ -30,22 +30,24 @@ namespace Horarium.Sample
             var secondJobDelay = TimeSpan.FromSeconds(15);
 
             await horarium
-                .Create<TestJob, int>(1) // 1-st job
-                .WithDelay(firstJobDelay)
-                .Next<TestJob, int>(2) // 2-nd job
-                .WithDelay(secondJobDelay)
-                .Next<TestJob, int>(3) // 3-rd job (global obsolete from settings and no delay will be applied)
-                .Next<FailedTestJob, int>(4) // 4-th job failed with exception
-                .AddRepeatStrategy<CustomRepeatStrategy>()
-                .MaxRepeatCount(3)
-                .AddFallbackConfiguration(x=>x.GoToNextJob()) // execution continues after all attempts
-                .Next<FailedTestJob, int>(5) // 5-th job job failed with exception
-                .MaxRepeatCount(1)
-                .AddFallbackConfiguration(x=>x.ScheduleFallbackJob<FallbackTestJob, int>(6, builder =>
-                {
-                    builder.Next<TestJob, int>(7);
-                })) // 6-th and 7-th jobs executes after all retries 
-                .Schedule();
+                .Schedule<TestJob, int>(1, conf => conf // 1-st job
+                                                   .WithDelay(firstJobDelay)
+                                                   .Next<TestJob, int>(2) // 2-nd job
+                                                   .WithDelay(secondJobDelay)
+                                                   .Next<TestJob, int>(3) // 3-rd job (global obsolete from settings and no delay will be applied)
+                                                   .Next<FailedTestJob, int>(4) // 4-th job failed with exception
+                                                   .AddRepeatStrategy<CustomRepeatStrategy>()
+                                                   .MaxRepeatCount(3)
+                                                   .AddFallbackConfiguration(
+                                                       x => x.GoToNextJob()) // execution continues after all attempts
+                                                   .Next<FailedTestJob, int>(5) // 5-th job job failed with exception
+                                                   .MaxRepeatCount(1)
+                                                   .AddFallbackConfiguration(
+                                                       x => x.ScheduleFallbackJob<FallbackTestJob, int>(6, builder =>
+                                                       {
+                                                           builder.Next<TestJob, int>(7);
+                                                       })) // 6-th and 7-th jobs executes after all retries 
+                );
 
             horarium.Start();
         }

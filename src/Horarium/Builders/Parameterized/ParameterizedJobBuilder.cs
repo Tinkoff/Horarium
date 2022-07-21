@@ -7,6 +7,7 @@ using Horarium.Interfaces;
 
 namespace Horarium.Builders.Parameterized
 {
+    [Obsolete("use JobSequenceBuilder instead")]
     internal class ParameterizedJobBuilder<TJob, TJobParam> : JobBuilder, IParameterizedJobBuilder
         where TJob : IJob<TJobParam>
     {
@@ -45,21 +46,6 @@ namespace Horarium.Builders.Parameterized
             Job.JobParam = parameters;
 
             _jobsQueue.Enqueue(Job);
-
-            return this;
-        }
-
-        public IParameterizedJobBuilder AddFallbackConfiguration(Action<IFallbackStrategyOptions> configure)
-        {
-            var options = new FallbackStrategyOptions(_globalObsoleteInterval);
-            if (configure == null)
-            {
-                return this;
-            }
-            configure(options);
-            
-            Job.FallbackStrategyType = options.FallbackStrategyType;
-            Job.FallbackJob = options.FallbackJobMetadata;
 
             return this;
         }

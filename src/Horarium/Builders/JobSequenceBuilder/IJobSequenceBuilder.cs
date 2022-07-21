@@ -1,11 +1,10 @@
 ﻿using System;
-using Horarium.Builders.Parameterized;
 using Horarium.Fallbacks;
 using Horarium.Interfaces;
 
-namespace Horarium.Builders.Fallback
+namespace Horarium.Builders.JobSequenceBuilder
 {
-    public interface IFallbackJobBuilder
+    public interface IJobSequenceBuilder
     {
         /// <summary>
         /// Create next job, it run after previous job
@@ -14,34 +13,34 @@ namespace Horarium.Builders.Fallback
         /// <typeparam name="TJob"></typeparam>
         /// <typeparam name="TJobParam"></typeparam>
         /// <returns></returns>
-        IFallbackJobBuilder Next<TJob, TJobParam>(TJobParam parameters) where TJob : IJob<TJobParam>;
+        IJobSequenceBuilder Next<TJob, TJobParam>(TJobParam parameters) where TJob : IJob<TJobParam>;
 
         /// <summary>
         /// Add custom failed repeat strategy for job
         /// </summary>
         /// <typeparam name="TRepeat"></typeparam>
         /// <returns></returns>
-        IFallbackJobBuilder AddRepeatStrategy<TRepeat>() where TRepeat : IFailedRepeatStrategy;
+        IJobSequenceBuilder AddRepeatStrategy<TRepeat>() where TRepeat : IFailedRepeatStrategy;
         
         /// <summary>
         /// Set custom max failed repeat count
         /// </summary>
         /// <param name="count">min value is 1, it's mean this job start only one time</param>
         /// <returns></returns>
-        IFallbackJobBuilder MaxRepeatCount(int count);
+        IJobSequenceBuilder MaxRepeatCount(int count);
+
+        /// <summary>
+        /// Add custom fallback configuration for job
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        IJobSequenceBuilder AddFallbackConfiguration(Action<IFallbackStrategyOptions> configure);
         
         /// <summary>
         /// Set delay for start this job
         /// </summary>
         /// <param name="delay"></param>
         /// <returns></returns>
-        IFallbackJobBuilder WithDelay(TimeSpan delay);
-        
-        /// <summary>
-        /// Add custom fallback configuration for job
-        /// </summary>
-        /// <param name="configure"></param>
-        /// <returns></returns>
-        IFallbackJobBuilder AddFallbackConfiguration(Action<IFallbackStrategyOptions> configure);
+        IJobSequenceBuilder WithDelay(TimeSpan delay);
     }
 }

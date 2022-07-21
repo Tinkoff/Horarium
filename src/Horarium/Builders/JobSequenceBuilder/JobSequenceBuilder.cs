@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Horarium.Builders.Parameterized;
 using Horarium.Fallbacks;
 using Horarium.Interfaces;
 
-namespace Horarium.Builders.Fallback
+namespace Horarium.Builders.JobSequenceBuilder
 {
-    internal class FallbackJobBuilder<TJob, TJobParam> : IFallbackJobBuilder where TJob : IJob<TJobParam>
+    internal class JobSequenceBuilder<TJob, TJobParam> : IJobSequenceBuilder where TJob : IJob<TJobParam>
     {
         private readonly Queue<JobMetadata> _jobsQueue = new Queue<JobMetadata>();
         private readonly TimeSpan _globalObsoleteInterval;
         
         private JobMetadata _job;
         
-        internal FallbackJobBuilder(TJobParam parameters, TimeSpan globalObsoleteInterval)
+        internal JobSequenceBuilder(TJobParam parameters, TimeSpan globalObsoleteInterval)
         {
             _globalObsoleteInterval = globalObsoleteInterval;
             
@@ -26,13 +23,13 @@ namespace Horarium.Builders.Fallback
             _jobsQueue.Enqueue(_job);
         }
         
-        public IFallbackJobBuilder WithDelay(TimeSpan delay)
+        public IJobSequenceBuilder WithDelay(TimeSpan delay)
         {
             _job.Delay = delay;
             return this;
         }
 
-        public IFallbackJobBuilder AddFallbackConfiguration(Action<IFallbackStrategyOptions> configure)
+        public IJobSequenceBuilder AddFallbackConfiguration(Action<IFallbackStrategyOptions> configure)
         {
             var options = new FallbackStrategyOptions(_globalObsoleteInterval);
             if (configure == null)
@@ -47,7 +44,7 @@ namespace Horarium.Builders.Fallback
             return this;
         }
 
-        public IFallbackJobBuilder Next<TNextJob, TNextJobParam>(TNextJobParam parameters)
+        public IJobSequenceBuilder Next<TNextJob, TNextJobParam>(TNextJobParam parameters)
             where TNextJob : IJob<TNextJobParam>
         {
             _job = JobBuilderHelpers.GenerateNewJob(typeof(TNextJob));
@@ -58,13 +55,13 @@ namespace Horarium.Builders.Fallback
             return this;
         }
 
-        public IFallbackJobBuilder AddRepeatStrategy<TRepeat>() where TRepeat : IFailedRepeatStrategy
+        public IJobSequenceBuilder AddRepeatStrategy<TRepeat>() where TRepeat : IFailedRepeatStrategy
         {
             _job.RepeatStrategy = typeof(TRepeat);
             return this;
         }
 
-        public IFallbackJobBuilder MaxRepeatCount(int count)
+        public IJobSequenceBuilder MaxRepeatCount(int count)
         {
             if (count < 1)
             {
@@ -74,7 +71,7 @@ namespace Horarium.Builders.Fallback
             return this;
         }
 
-        public JobMetadata BuildJob()
+        public JobMetadata Build()
         {
             return JobBuilderHelpers.BuildJobsSequence(_jobsQueue, _globalObsoleteInterval);
         }

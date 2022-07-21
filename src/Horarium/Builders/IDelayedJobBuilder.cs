@@ -2,6 +2,7 @@ using System;
 
 namespace Horarium.Builders
 {
+    [Obsolete("use IJobSequenceBuilder instead")]
     public interface IDelayedJobBuilder<out TJobBuilder> where TJobBuilder : IJobBuilder
     {
         /// <summary>

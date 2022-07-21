@@ -1,6 +1,5 @@
 ﻿using System;
-using Horarium.Builders.Fallback;
-using Horarium.Builders.Parameterized;
+using Horarium.Builders.JobSequenceBuilder;
 using Horarium.Interfaces;
 
 namespace Horarium.Fallbacks
@@ -17,14 +16,14 @@ namespace Horarium.Fallbacks
             _globalObsoleteInterval = globalObsoleteInterval;
         }
         
-        public void ScheduleFallbackJob<TJob, TJobParam>(TJobParam parameters, Action<IFallbackJobBuilder> fallbackJobConfigure = null) where TJob : IJob<TJobParam>
+        public void ScheduleFallbackJob<TJob, TJobParam>(TJobParam parameters, Action<IJobSequenceBuilder> fallbackJobConfigure = null) where TJob : IJob<TJobParam>
         {
             FallbackStrategyType = FallbackStrategyTypeEnum.ScheduleFallbackJob;
             
-            var builder = new FallbackJobBuilder<TJob, TJobParam>(parameters, _globalObsoleteInterval);
+            var builder = new JobSequenceBuilder<TJob, TJobParam>(parameters, _globalObsoleteInterval);
             fallbackJobConfigure?.Invoke(builder);
             
-            FallbackJobMetadata = builder.BuildJob();
+            FallbackJobMetadata = builder.Build();
         }
 
         public void StopExecution()
