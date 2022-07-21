@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Horarium.Builders.JobSequenceBuilder;
 using Horarium.Builders.Recurrent;
 using Horarium.Handlers;
 using Horarium.Interfaces;
@@ -32,7 +33,19 @@ namespace Horarium
         {
             return new RecurrentJobBuilder(_adderJobs, cron, typeof(TJob), GlobalObsoleteInterval);
         }
+        
+        public async Task Schedule<TJob, TJobParam>(TJobParam param, Action<IJobSequenceBuilder> configure = null) where TJob : IJob<TJobParam>
+        {
+            var jobBuilder = new JobSequenceBuilder<TJob, TJobParam>(param, _settings.ObsoleteExecutingJob);
+            
+            configure?.Invoke(jobBuilder);
 
+            var job = jobBuilder.Build();
+
+            await _adderJobs.AddEnqueueJob(job);
+        }
+
+        [Obsolete("use Schedule method instead")]
         public IParameterizedJobBuilder Create<TJob, TJobParam>(TJobParam param) where TJob : IJob<TJobParam>
         {
             return new ParameterizedJobBuilder<TJob, TJobParam>(_adderJobs, param, _settings.ObsoleteExecutingJob);

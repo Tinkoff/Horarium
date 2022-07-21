@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Horarium.Fallbacks;
 using Horarium.Interfaces;
 
 namespace Horarium.Builders.Parameterized
 {
+    [Obsolete("use JobSequenceBuilder instead")]
     internal class ParameterizedJobBuilder<TJob, TJobParam> : JobBuilder, IParameterizedJobBuilder
         where TJob : IJob<TJobParam>
     {
@@ -66,29 +68,9 @@ namespace Horarium.Builders.Parameterized
 
         public override Task Schedule()
         {
-            var job = _jobsQueue.Dequeue();
-
-            FillWithDefaultIfNecessary(job);
-            var previous = job;
-
-            while (_jobsQueue.Any())
-            {
-                previous.NextJob = _jobsQueue.Dequeue();
-                previous = previous.NextJob;
-                FillWithDefaultIfNecessary(previous);
-            }
+            var job = JobBuilderHelpers.BuildJobsSequence(_jobsQueue, _globalObsoleteInterval);
 
             return _adderJobs.AddEnqueueJob(job);
-        }
-
-        private void FillWithDefaultIfNecessary(JobMetadata job)
-        {
-            job.Delay = job.Delay ?? TimeSpan.Zero;
-            job.StartAt = DateTime.UtcNow + job.Delay.Value;
-
-            job.ObsoleteInterval = job.ObsoleteInterval == default(TimeSpan)
-                ? _globalObsoleteInterval
-                : job.ObsoleteInterval;
         }
     }
 }

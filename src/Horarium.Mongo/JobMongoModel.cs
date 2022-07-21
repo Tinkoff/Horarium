@@ -1,4 +1,5 @@
 using System;
+using Horarium.Fallbacks;
 using Horarium.Repository;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -28,7 +29,9 @@ namespace Horarium.Mongo
                 Delay = Delay,
                 ObsoleteInterval = ObsoleteInterval,
                 RepeatStrategy = RepeatStrategy,
-                MaxRepeatCount = MaxRepeatCount
+                MaxRepeatCount = MaxRepeatCount,
+                FallbackJob = FallbackJob?.ToJobDb(),
+                FallbackStrategyType = FallbackStrategyType
             };
         }
 
@@ -98,6 +101,13 @@ namespace Horarium.Mongo
         [BsonRepresentation(BsonType.Int32)]
         [BsonElement("MaxRepeatCount")]
         public int MaxRepeatCount { get; set; }
+        
+        [BsonElement("FallbackJob")]
+        public JobMongoModel FallbackJob { get; set; }
+        
+        [BsonRepresentation(BsonType.String)]
+        [BsonElement("FallbackStrategyType")]
+        public FallbackStrategyTypeEnum? FallbackStrategyType { get; set; }
 
         public static JobMongoModel CreateJobMongoModel(JobDb jobDb)
         {
@@ -118,7 +128,9 @@ namespace Horarium.Mongo
                 Delay = jobDb.Delay,
                 ObsoleteInterval = jobDb.ObsoleteInterval,
                 RepeatStrategy = jobDb.RepeatStrategy,
-                MaxRepeatCount = jobDb.MaxRepeatCount
+                MaxRepeatCount = jobDb.MaxRepeatCount,
+                FallbackStrategyType = jobDb.FallbackStrategyType,
+                FallbackJob = jobDb.FallbackJob != null ? CreateJobMongoModel(jobDb.FallbackJob) : null,
             };
         }
     }

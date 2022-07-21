@@ -1,7 +1,10 @@
+using System;
+using Horarium.Fallbacks;
 using Horarium.Interfaces;
 
 namespace Horarium.Builders.Parameterized
 {
+    [Obsolete("use IJobSequenceBuilder instead")]
     public interface IParameterizedJobBuilder : IJobBuilder, IDelayedJobBuilder<IParameterizedJobBuilder>
     {
         /// <summary>
