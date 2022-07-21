@@ -19,13 +19,4 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
     <Reference Include="System" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Builders\Fallback\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="Builders\Fallback\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Builders\Fallback\**" />
-  </ItemGroup>
 </Project>
