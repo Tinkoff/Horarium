@@ -7,9 +7,10 @@ namespace Horarium.IntegrationTest.Jobs
     {
         public static bool Run;
 
-        public async Task Execute(int param)
+        public Task Execute(int param)
         {
             Run = true;
+            return Task.CompletedTask;
         }
     }
 }

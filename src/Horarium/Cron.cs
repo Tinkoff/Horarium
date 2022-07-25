@@ -56,7 +56,7 @@ namespace Horarium
 
         public static string Weekly(DayOfWeek dayOfWeek, int hour, int minute)
         {
-            return $"0 {minute} {hour} * * {(int) dayOfWeek}";
+            return $"0 {minute} {hour} * * {(int)dayOfWeek}";
         }
 
         public static string Monthly()

@@ -18,6 +18,5 @@ namespace Horarium.Handlers
         {
             return _jobRepository.GetJobStatistic();
         }
-
     }
 }

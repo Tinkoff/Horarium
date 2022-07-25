@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-
 using Horarium.Interfaces;
 using Horarium.Repository;
-using Newtonsoft.Json;
 using Horarium.Builders.Recurrent;
 using Horarium.Fallbacks;
 
@@ -29,7 +25,7 @@ namespace Horarium.Handlers
 
         public Task Execute(JobMetadata jobMetadata)
         {
-            if (jobMetadata.JobType.GetTypeInfo().GetInterfaces().Contains(typeof(IJobRecurrent)))
+            if (jobMetadata.JobType.Implements<IJobRecurrent>())
             {
                 return ExecuteJobRecurrent(jobMetadata);
             }

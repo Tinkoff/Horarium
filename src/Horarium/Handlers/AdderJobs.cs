@@ -15,7 +15,7 @@ namespace Horarium.Handlers
         {
             _jobRepository = jobRepository;
             _jsonSerializerSettings = jsonSerializerSettings;
-            _recurrentJobSettingsAdder = new RecurrentJobSettingsAdder(_jobRepository, _jsonSerializerSettings);
+            _recurrentJobSettingsAdder = new RecurrentJobSettingsAdder(_jobRepository);
         }
 
         public Task AddEnqueueJob(JobMetadata jobMetadata)

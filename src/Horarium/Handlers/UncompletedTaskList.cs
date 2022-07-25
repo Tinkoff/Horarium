@@ -33,7 +33,7 @@ namespace Horarium.Handlers
             {
                 lock (_lockObject)
                 {
-                    _uncompletedTasks.Remove((LinkedListNode<Task>) state);
+                    _uncompletedTasks.Remove((LinkedListNode<Task>)state);
                 }
             }, linkedListNode, CancellationToken.None);
         }
@@ -58,7 +58,6 @@ namespace Horarium.Handlers
                 throw new OperationCanceledException(
                     "Horarium stop timeout is expired. One or many jobs are still running. These jobs may not save their state.",
                     cancellationToken);
-
         }
     }
 }
