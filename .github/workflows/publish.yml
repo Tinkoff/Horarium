@@ -1,0 +1,39 @@
+name: Deploy
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  deploy:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.event.release.tag_name }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '2.2.x' # SDK Version to use.
+      - name: prepare version
+        run: |
+          echo "$VERSION"
+      - name: pack Horarium
+        run: |
+          cd src
+          dotnet pack Horarium/Horarium.csproj -c Release  /p:PackageVersion=${{env.VERSION}}
+      - name: pack Horarium.Mongo
+        run: |
+          cd src
+          dotnet pack Horarium.Mongo/Horarium.Mongo.csproj -c Release  /p:PackageVersion=${{env.VERSION}}
+      - name: pack Horarium.AspNetCore
+        run: |
+          cd src
+          dotnet pack Horarium.AspNetCore/Horarium.AspNetCore.csproj -c Release  /p:PackageVersion=${{env.VERSION}}
+      - name: publish
+        run: |
+          cd src
+          dotnet nuget push **/Horarium.*.nupkg -k ${{secrets.NUGET_APIKEY}} -s https://www.nuget.org
