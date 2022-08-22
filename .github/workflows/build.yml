@@ -1,0 +1,35 @@
+name: Build
+on:
+  - workflow_call
+  - pull_request
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:5.0.10
+        ports:
+          - 27017:27017
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '2.2.x' # SDK Version to use.
+        env:
+          MONGO_ADDRESS: localhost
+      - name: build
+        run: |
+          dotnet build src/Horarium.sln -c Release
+      - name: check mongo
+        run: |
+          sleep 5
+          mongo --host localhost --eval "db.version()"
+      - name: run unit tests
+        run: |
+          dotnet test src/Horarium.Test/Horarium.Test.csproj -c Release --no-restore
+      - name: run MongoDB integration tests
+        run: |
+          DataBase=MongoDB dotnet test src/Horarium.IntegrationTest/Horarium.IntegrationTest.csproj -c Release --no-restore
+      - name: run InMemory integration tests
+        run: |
+          DataBase=Memory dotnet test src/Horarium.IntegrationTest/Horarium.IntegrationTest.csproj -c Release --no-restore
