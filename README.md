@@ -1,9 +1,7 @@
 # Horarium
 
-[![Build Status](https://cloud.drone.io/api/badges/TinkoffCreditSystems/Horarium/status.svg)](https://cloud.drone.io/TinkoffCreditSystems/Horarium)
+[![Build Status](https://github.com/TinkoffCreditSystems/Horarium/actions/workflows/build.yml/badge.svg)](https://github.com/TinkoffCreditSystems/Horarium/actions/)
 [![Nuget](https://img.shields.io/nuget/v/Horarium.svg)](https://www.nuget.org/packages/Horarium)
-[![codecov](https://codecov.io/gh/TinkoffCreditSystems/Horarium/branch/master/graph/badge.svg)](https://codecov.io/gh/TinkoffCreditSystems/Horarium)
-[![codefactor](https://www.codefactor.io/repository/github/tinkoffcreditsystems/horarium/badge)](https://www.codefactor.io/repository/github/tinkoffcreditsystems/horarium)
 
 Horarium is an open source job scheduling .NET library with an easy to use API, that can be integrated within applications of any scale - from the smallest stand-alone application to the largest e-commerce system.
 
