@@ -66,7 +66,7 @@ namespace Horarium.Test
 
             // Act
             runnerJobs.Start();
-            await Task.Delay(settings.IntervalStartJob + TimeSpan.FromMilliseconds(500));
+            await Task.Delay(settings.IntervalStartJob + TimeSpan.FromMilliseconds(1000));
 
             // Assert
             jobRepositoryMock.Verify(r => r.GetReadyJob(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.AtLeast(2));
