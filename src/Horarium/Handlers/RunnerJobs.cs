@@ -85,16 +85,29 @@ namespace Horarium.Handlers
 
         private async Task<JobMetadata> GetReadyJob()
         {
+            JobDb job = null;
+            
             try
             {
-                var job = await _jobRepository.GetReadyJob(_machineName, _settings.ObsoleteExecutingJob);
-
-                if (job != null)
-                    return job.ToJob(_jsonSerializerSettings);
+                job = await _jobRepository.GetReadyJob(_machineName, _settings.ObsoleteExecutingJob);
             }
             catch (Exception ex)
             {
                 _horariumLogger.Error("Ошибка получения джоба из базы", ex);
+            }
+
+            try
+            {
+                if (job != null)
+                {
+                    return job.ToJob(_jsonSerializerSettings);
+                }
+            }
+            catch (Exception ex)
+            {
+                _horariumLogger.Error("Ошибка парсинга метаданных джоба", ex);
+
+                await _jobRepository.FailedJob(job.JobId, ex);
             }
 
             return null;
