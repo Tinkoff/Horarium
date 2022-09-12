@@ -96,12 +96,11 @@ namespace Horarium.Handlers
                 _horariumLogger.Error("Ошибка получения джоба из базы", ex);
             }
 
+            if (job == null) return null;
+
             try
             {
-                if (job != null)
-                {
-                    return job.ToJob(_jsonSerializerSettings);
-                }
+                return job.ToJob(_jsonSerializerSettings);
             }
             catch (Exception ex)
             {
