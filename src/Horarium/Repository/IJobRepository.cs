@@ -24,6 +24,6 @@ namespace Horarium.Repository
 
         Task<Dictionary<JobStatus, int>> GetJobStatistic();
 
-        Task RescheduleRecurrentJob(string jobId, DateTime? startAt, Exception error);
+        Task RescheduleRecurrentJob(string jobId, DateTime startAt, Exception error);
     }
 }

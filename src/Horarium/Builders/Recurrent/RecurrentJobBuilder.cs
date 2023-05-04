@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Cronos;
 using Horarium.Interfaces;
 
 namespace Horarium.Builders.Recurrent

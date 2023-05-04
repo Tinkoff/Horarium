@@ -2,11 +2,8 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-
 using Horarium.Interfaces;
 using Horarium.Repository;
-using Newtonsoft.Json;
-using Horarium.Builders.Recurrent;
 using Horarium.Fallbacks;
 
 namespace Horarium.Handlers
@@ -14,7 +11,6 @@ namespace Horarium.Handlers
     public class ExecutorJob : IExecutorJob
     {
         private readonly IJobRepository _jobRepository;
-        private readonly IAdderJobs _adderJobs;
         private readonly HorariumSettings _settings;
 
         public ExecutorJob(
@@ -23,7 +19,6 @@ namespace Horarium.Handlers
             HorariumSettings settings)
         {
             _jobRepository = jobRepository;
-            _adderJobs = adderJobs;
             _settings = settings;
         }
 
@@ -99,20 +94,14 @@ namespace Horarium.Handlers
 
                     _settings.Logger.Debug("jobMetadata excecuted");
 
-                    await _jobRepository.RescheduleRecurrentJob(jobMetadata.JobId,
-                        Utils.ParseAndGetNextOccurrence(jobMetadata.Cron), null);
+                    await ScheduleNextRecurrentIfPossible(jobMetadata, null);
 
                     _settings.Logger.Debug("jobMetadata saved success");
                 }
             }
             catch (Exception ex)
             {
-                await _jobRepository.RescheduleRecurrentJob(jobMetadata.JobId,
-                    Utils.ParseAndGetNextOccurrence(jobMetadata.Cron), ex);
-            }
-            finally
-            {
-                await ScheduleRecurrentNextTime(jobMetadata);
+                await ScheduleNextRecurrentIfPossible(jobMetadata, ex);
             }
         }
 
@@ -165,13 +154,19 @@ namespace Horarium.Handlers
             return DateTime.UtcNow + strategy.GetNextStartInterval(jobMetadata.CountStarted);
         }
 
-        private async Task ScheduleRecurrentNextTime(JobMetadata metadata)
+        private async Task ScheduleNextRecurrentIfPossible(JobMetadata metadata, Exception error)
         {
-            var cron = await _jobRepository.GetCronForRecurrentJob(metadata.JobKey);
+            var newStartAt = Utils.ParseAndGetNextOccurrence(metadata.Cron);
 
-            await new RecurrentJobBuilder(_adderJobs, cron, metadata.JobType, metadata.ObsoleteInterval)
-                .WithKey(metadata.JobKey)
-                .Schedule();
+            if (newStartAt.HasValue)
+            {
+                await _jobRepository.RescheduleRecurrentJob(metadata.JobId,
+                    newStartAt.Value, error);
+            }
+            else
+            {
+                await _jobRepository.RemoveJob(metadata.JobId);
+            }
         }
 
         private async Task ScheduleNextJobIfExists(JobMetadata metadata)
@@ -211,8 +206,6 @@ namespace Horarium.Handlers
                     return ScheduleNextJobIfExists(metadata);
                 case FallbackStrategyTypeEnum.ScheduleFallbackJob:
                     return ScheduleFallbackJobIfExists(metadata);
-                case null:
-                case FallbackStrategyTypeEnum.StopExecution:
                 default:
                     return Task.CompletedTask;
             }
