@@ -113,31 +113,27 @@ namespace Horarium.Mongo
         {
             var collection = _mongoClientProvider.GetCollection<JobMongoModel>();
 
-            var update = Builders<JobMongoModel>.Update
-                .Set(x => x.StartAt, startAt)
-                .Set(x => x.Status, error != null ? JobStatus.Ready : JobStatus.Failed)
-                .Set(x => x.Error, error != null ? error.Message + ' ' + error.StackTrace : null);
+            await collection.UpdateOneAsync(
+                x => x.JobId == jobId,
+                Builders<JobMongoModel>.Update
+                    .Set(x => x.StartAt, startAt)
+                    .Set(x => x.Status, JobStatus.Ready));
 
             if (error == null)
             {
-                await collection.UpdateOneAsync(x => x.JobId == jobId, update);
-
                 return;
             }
-            
-            var job = await collection
+
+            var failedJob = await collection
                 .Find(Builders<JobMongoModel>.Filter.Where(x => x.JobId == jobId))
                 .FirstOrDefaultAsync();
 
-            job.JobId = JobBuilderHelpers.GenerateNewJobId();
-            job.StartAt = startAt;
-            job.Status = JobStatus.Ready;
+            failedJob.JobId = JobBuilderHelpers.GenerateNewJobId();
+            failedJob.Status = JobStatus.Failed;
+            failedJob.Error = error.Message + ' ' + error.StackTrace;
+            failedJob.StartAt = DateTime.MinValue;
 
-            await collection.BulkWriteAsync(new List<WriteModel<JobMongoModel>>
-            {
-                new UpdateOneModel<JobMongoModel>(Builders<JobMongoModel>.Filter.Where(x => x.JobId == jobId), update),
-                new InsertOneModel<JobMongoModel>(job)
-            });
+            await collection.InsertOneAsync(failedJob);
         }
 
         public async Task RepeatJob(string jobId, DateTime startAt, Exception error)
