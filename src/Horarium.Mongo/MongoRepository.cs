@@ -113,6 +113,15 @@ namespace Horarium.Mongo
         {
             var collection = _mongoClientProvider.GetCollection<JobMongoModel>();
 
+            JobMongoModel failedJob = null;
+            
+            if (error != null)
+            {
+                failedJob = await collection
+                    .Find(Builders<JobMongoModel>.Filter.Where(x => x.JobId == jobId))
+                    .FirstOrDefaultAsync();
+            }
+
             await collection.UpdateOneAsync(
                 x => x.JobId == jobId,
                 Builders<JobMongoModel>.Update
@@ -124,14 +133,9 @@ namespace Horarium.Mongo
                 return;
             }
 
-            var failedJob = await collection
-                .Find(Builders<JobMongoModel>.Filter.Where(x => x.JobId == jobId))
-                .FirstOrDefaultAsync();
-
             failedJob.JobId = JobBuilderHelpers.GenerateNewJobId();
             failedJob.Status = JobStatus.Failed;
             failedJob.Error = error.Message + ' ' + error.StackTrace;
-            failedJob.StartAt = DateTime.MinValue;
 
             await collection.InsertOneAsync(failedJob);
         }
