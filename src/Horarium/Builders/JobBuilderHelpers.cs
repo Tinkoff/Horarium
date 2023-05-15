@@ -17,6 +17,8 @@ namespace Horarium.Builders
             }; 
         }
 
+        public static string GenerateNewJobId() => Guid.NewGuid().ToString("N");
+
         public static JobMetadata BuildJobsSequence(Queue<JobMetadata> jobsQueue, TimeSpan globalObsoleteInterval)
         {
             var job = jobsQueue.Dequeue();

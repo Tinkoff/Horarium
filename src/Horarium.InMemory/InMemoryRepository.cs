@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Horarium.Builders;
 using Horarium.Repository;
 
 namespace Horarium.InMemory
@@ -52,7 +53,7 @@ namespace Horarium.InMemory
                 _storage.Remove(job);
 
                 job.Status = JobStatus.Failed;
-                job.Error = error.Message + error.StackTrace;
+                job.Error = error.Message + ' ' + error.StackTrace;
 
                 _storage.Add(job);
             });
@@ -74,7 +75,7 @@ namespace Horarium.InMemory
 
                 job.Status = JobStatus.RepeatJob;
                 job.StartAt = startAt;
-                job.Error = error.Message + error.StackTrace;
+                job.Error = error.Message + ' ' + error.StackTrace;
 
                 _storage.Add(job);
             });
@@ -113,6 +114,40 @@ namespace Horarium.InMemory
         public Task<Dictionary<JobStatus, int>> GetJobStatistic()
         {
             return Task.FromResult(_storage.GetStatistics());
+        }
+
+        public Task RescheduleRecurrentJob(string jobId, DateTime startAt, Exception error)
+        {
+            return _processor.Execute(() =>
+            {
+                var completedJob = _storage.GetById(jobId);
+                if (completedJob == null) return;
+                
+                _storage.Remove(completedJob);
+
+                if (error == null)
+                {
+                    completedJob.Status = JobStatus.Ready;
+                    completedJob.StartAt = startAt;
+
+                    _storage.Add(completedJob);
+                    
+                    return;
+                }
+
+                completedJob.Status = JobStatus.Failed;
+                completedJob.Error = error.Message + ' ' + error.StackTrace;
+
+                _storage.Add(completedJob);
+
+                var newJob = completedJob.Copy();
+
+                newJob.JobId = JobBuilderHelpers.GenerateNewJobId();
+                newJob.Status = JobStatus.Ready;
+                newJob.StartAt = startAt;
+                
+                _storage.Add(newJob);
+            });
         }
     }
 }

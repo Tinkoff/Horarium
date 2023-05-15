@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Horarium.Builders;
 using Horarium.Repository;
 using MongoDB.Driver;
 
@@ -27,7 +28,7 @@ namespace Horarium.Mongo
             var filter = Builders<JobMongoModel>.Filter.Where(x =>
                 (x.Status == JobStatus.Ready || x.Status == JobStatus.RepeatJob) && x.StartAt < DateTime.UtcNow
                 || x.Status == JobStatus.Executing && x.StartedExecuting < DateTime.UtcNow - obsoleteTime);
-            
+
             var update = Builders<JobMongoModel>.Update
                 .Set(x => x.Status, JobStatus.Executing)
                 .Set(x => x.ExecutedMachine, machineName)
@@ -36,7 +37,7 @@ namespace Horarium.Mongo
 
             var options = new FindOneAndUpdateOptions<JobMongoModel> {ReturnDocument = ReturnDocument.After};
 
-            var result =  await collection.FindOneAndUpdateAsync(filter, update, options);
+            var result = await collection.FindOneAndUpdateAsync(filter, update, options);
 
             return result?.ToJobDb();
         }
@@ -55,9 +56,8 @@ namespace Horarium.Mongo
                 .Set(x => x.Cron, job.Cron)
                 .Set(x => x.StartAt, job.StartAt);
 
-            var needsProperties =
-                _jobDbProperties.Where(x => x.Name != nameof(JobMongoModel.Cron) 
-                                            && x.Name != nameof(JobMongoModel.StartAt));
+            var needsProperties = _jobDbProperties.Where(x =>
+                x.Name != nameof(JobMongoModel.Cron) && x.Name != nameof(JobMongoModel.StartAt));
 
             //Если джоб уже существет апдейтем только 2 поля
             //Если нужно создать, то устанавливаем все остальные поля
@@ -66,8 +66,8 @@ namespace Horarium.Mongo
                 update = update.SetOnInsert(jobDbProperty.Name, jobDbProperty.GetValue(job));
             }
 
-            await IMongoCollectionExtensions.UpdateOneAsync(collection, x => x.JobKey == job.JobKey
-                                                 && (x.Status == JobStatus.Executing || x.Status == JobStatus.Ready),
+            await collection.UpdateOneAsync(
+                x => x.JobKey == job.JobKey && (x.Status == JobStatus.Executing || x.Status == JobStatus.Ready),
                 update,
                 new UpdateOptions
                 {
@@ -79,7 +79,8 @@ namespace Horarium.Mongo
         {
             var collection = _mongoClientProvider.GetCollection<RecurrentJobSettingsMongo>();
 
-            await collection.ReplaceOneAsync(x => x.JobKey == settings.JobKey, 
+            await collection.ReplaceOneAsync(
+                x => x.JobKey == settings.JobKey,
                 RecurrentJobSettingsMongo.Create(settings),
                 new UpdateOptions
                 {
@@ -108,6 +109,37 @@ namespace Horarium.Mongo
             await collection.DeleteOneAsync(x => x.JobId == jobId);
         }
 
+        public async Task RescheduleRecurrentJob(string jobId, DateTime startAt, Exception error)
+        {
+            var collection = _mongoClientProvider.GetCollection<JobMongoModel>();
+
+            JobMongoModel failedJob = null;
+            
+            if (error != null)
+            {
+                failedJob = await collection
+                    .Find(Builders<JobMongoModel>.Filter.Where(x => x.JobId == jobId))
+                    .FirstOrDefaultAsync();
+            }
+
+            await collection.UpdateOneAsync(
+                x => x.JobId == jobId,
+                Builders<JobMongoModel>.Update
+                    .Set(x => x.StartAt, startAt)
+                    .Set(x => x.Status, JobStatus.Ready));
+
+            if (error == null)
+            {
+                return;
+            }
+
+            failedJob.JobId = JobBuilderHelpers.GenerateNewJobId();
+            failedJob.Status = JobStatus.Failed;
+            failedJob.Error = error.Message + ' ' + error.StackTrace;
+
+            await collection.InsertOneAsync(failedJob);
+        }
+
         public async Task RepeatJob(string jobId, DateTime startAt, Exception error)
         {
             var collection = _mongoClientProvider.GetCollection<JobMongoModel>();
@@ -115,7 +147,7 @@ namespace Horarium.Mongo
             var update = Builders<JobMongoModel>.Update
                 .Set(x => x.Status, JobStatus.RepeatJob)
                 .Set(x => x.StartAt, startAt)
-                .Set(x => x.Error, error.Message + error.StackTrace);
+                .Set(x => x.Error, error.Message + ' ' + error.StackTrace);
 
             await collection.UpdateOneAsync(x => x.JobId == jobId, update);
         }
@@ -126,7 +158,7 @@ namespace Horarium.Mongo
 
             var update = Builders<JobMongoModel>.Update
                 .Set(x => x.Status, JobStatus.Failed)
-                .Set(x => x.Error, error.Message + error.StackTrace);
+                .Set(x => x.Error, error.Message + ' ' + error.StackTrace);
 
             await collection.UpdateOneAsync(x => x.JobId == jobId, update);
         }
