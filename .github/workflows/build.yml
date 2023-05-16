@@ -11,6 +11,11 @@ jobs:
     services:
       mongodb:
         image: mongo:5.0.10
+        options: >-
+          --health-cmd "echo 'db.runCommand("ping").ok' | mongo --host localhost --quiet --eval 'db.version()'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
           - 27017:27017
     steps:
@@ -23,10 +28,6 @@ jobs:
       - name: build
         run: |
           dotnet build src/Horarium.sln -c Release
-      - name: check mongo
-        run: |
-          sleep 5
-          mongo --host localhost --eval "db.version()"
       - name: run unit tests
         run: |
           dotnet test src/Horarium.Test/Horarium.Test.csproj -c Release --no-restore
