@@ -21,7 +21,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object
@@ -49,7 +48,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object
@@ -76,7 +74,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 Mock.Of<IJobRepository>(),
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object,
@@ -105,7 +102,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 Mock.Of<IJobRepository>(),
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object
@@ -133,7 +129,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 Mock.Of<IJobRepository>(),
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object
@@ -162,7 +157,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object
@@ -185,7 +179,6 @@ namespace Horarium.Test
             // Arrange
             var jobRepositoryMock = new Mock<IJobRepository>();
             var (jobScopeFactoryMock, jobScopeMock) = CreateScopeMock();
-            var jobAdderJob = new Mock<IAdderJobs>();
 
             const string cron = "*/15 * * * * *";
 
@@ -194,7 +187,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
-                jobAdderJob.Object,
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object
@@ -234,7 +226,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object,
@@ -269,7 +260,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object,
@@ -309,7 +299,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object
@@ -350,7 +339,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object
@@ -389,7 +377,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 Mock.Of<IJobRepository>(),
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object,
@@ -416,7 +403,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 Mock.Of<IJobRepository>(),
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object,
@@ -446,7 +432,6 @@ namespace Horarium.Test
 
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object,
@@ -475,7 +460,6 @@ namespace Horarium.Test
             
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
-                Mock.Of<IAdderJobs>(),
                 new HorariumSettings
                 {
                     JobScopeFactory = jobScopeFactoryMock.Object,
