@@ -15,7 +15,6 @@ namespace Horarium.Handlers
 
         public ExecutorJob(
             IJobRepository jobRepository,
-            IAdderJobs adderJobs,
             HorariumSettings settings)
         {
             _jobRepository = jobRepository;

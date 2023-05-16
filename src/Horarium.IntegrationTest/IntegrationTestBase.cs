@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Horarium.InMemory;
 using Horarium.Mongo;
 using Horarium.Repository;

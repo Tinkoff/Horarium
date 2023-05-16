@@ -103,14 +103,6 @@ namespace Horarium.InMemory
             return Task.CompletedTask;
         }
 
-        public Task<string> GetCronForRecurrentJob(string jobKey)
-        {
-            if (!_settingsStorage.TryGetValue(jobKey, out var settings))
-                throw new Exception($"Settings for recurrent job (jobKey = {jobKey}) aren't found");
-
-            return Task.FromResult(settings.Cron);
-        }
-
         public Task<Dictionary<JobStatus, int>> GetJobStatistic()
         {
             return Task.FromResult(_storage.GetStatistics());

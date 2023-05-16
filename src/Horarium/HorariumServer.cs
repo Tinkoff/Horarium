@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Horarium.Handlers;
@@ -14,7 +13,6 @@ namespace Horarium
     {
         private readonly HorariumSettings _settings;
         private IRunnerJobs _runnerJobs;
-        private readonly IAdderJobs _adderJobs;
 
         private readonly IJobRepository _jobRepository;
 
@@ -27,13 +25,12 @@ namespace Horarium
             : base(jobRepository, settings)
         {
             _settings = settings;
-            _adderJobs = new AdderJobs(jobRepository, _settings.JsonSerializerSettings);
             _jobRepository = jobRepository;
         }
 
         public void Start()
         {
-            var executorJob = new ExecutorJob(_jobRepository, _adderJobs, _settings);
+            var executorJob = new ExecutorJob(_jobRepository, _settings);
 
             _runnerJobs = new RunnerJobs(_jobRepository, _settings, _settings.JsonSerializerSettings, _settings.Logger,
                 executorJob, new UncompletedTaskList());
