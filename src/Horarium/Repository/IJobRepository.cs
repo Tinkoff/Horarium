@@ -20,8 +20,6 @@ namespace Horarium.Repository
 
         Task AddRecurrentJobSettings(RecurrentJobSettings settings);
 
-        Task<string> GetCronForRecurrentJob(string jobKey);
-
         Task<Dictionary<JobStatus, int>> GetJobStatistic();
 
         Task RescheduleRecurrentJob(string jobId, DateTime startAt, Exception error);

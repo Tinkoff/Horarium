@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Horarium.IntegrationTest.Jobs;
 using Horarium.IntegrationTest.Jobs.Fallback;
 using Xunit;
 

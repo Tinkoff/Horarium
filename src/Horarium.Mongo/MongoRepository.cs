@@ -88,20 +88,6 @@ namespace Horarium.Mongo
                 });
         }
 
-        public async Task<string> GetCronForRecurrentJob(string jobKey)
-        {
-            var collection = _mongoClientProvider.GetCollection<RecurrentJobSettingsMongo>();
-
-            var recurrentJobSettingsCollection = await collection.FindAsync(x => x.JobKey == jobKey);
-
-            var recurrentJobSettings = recurrentJobSettingsCollection.FirstOrDefault();
-
-            if (recurrentJobSettings == null)
-                throw new Exception("Не найдены настройки для рекуррентного джоба");
-
-            return recurrentJobSettings.Cron;
-        }
-
         public async Task RemoveJob(string jobId)
         {
             var collection = _mongoClientProvider.GetCollection<JobMongoModel>();

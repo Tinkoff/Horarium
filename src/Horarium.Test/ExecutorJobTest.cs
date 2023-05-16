@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Moq;
-using Newtonsoft.Json;
 using Horarium.Handlers;
 using Horarium.Interfaces;
 using Horarium.Repository;
@@ -160,8 +159,6 @@ namespace Horarium.Test
 
             jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Returns(() => new TestReccurrentJob());
-            jobRepositoryMock.Setup(x => x.GetCronForRecurrentJob(It.IsAny<string>()))
-                .ReturnsAsync(cron);
 
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
@@ -183,7 +180,7 @@ namespace Horarium.Test
         }
 
         [Fact]
-        public async Task RecurrentJob_ThrowException_AddRecurrentJobNextStart()
+        public async Task RecurrentJob_ThrowException_RescheduleJob()
         {
             // Arrange
             var jobRepositoryMock = new Mock<IJobRepository>();
@@ -194,8 +191,6 @@ namespace Horarium.Test
 
             jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Returns(() => throw new Exception());
-            jobRepositoryMock.Setup(x => x.GetCronForRecurrentJob(It.IsAny<string>()))
-                .ReturnsAsync(cron);
 
             var executorJob = new ExecutorJob(
                 jobRepositoryMock.Object,
@@ -218,10 +213,10 @@ namespace Horarium.Test
             await executorJob.Execute(job);
 
             // Assert
-            jobRepositoryMock.Verify(x => x.GetCronForRecurrentJob(It.IsAny<string>()), Times.Once);
-            jobAdderJob.Verify(x => x.AddRecurrentJob(It.Is<JobMetadata>(j => j.JobType == job.JobType &&
-                                                                              j.JobKey == job.JobKey &&
-                                                                              j.Cron == job.Cron)));
+            jobRepositoryMock.Verify(x => x.RescheduleRecurrentJob(
+                job.JobId,
+                Utils.ParseAndGetNextOccurrence(cron).Value, 
+                It.IsAny<Exception>()));
         }
 
         [Fact]
@@ -234,8 +229,6 @@ namespace Horarium.Test
 
             const string cron = "*/15 * * * * *";
 
-            jobRepositoryMock.Setup(x => x.GetCronForRecurrentJob(It.IsAny<string>()))
-                .ReturnsAsync(cron);
             jobScopeMock.Setup(x => x.CreateJob(It.IsAny<Type>()))
                 .Throws<Exception>();
 

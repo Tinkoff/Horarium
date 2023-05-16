@@ -1,5 +1,4 @@
 ﻿using System;
-using Horarium.Fallbacks;
 using Horarium.Interfaces;
 
 namespace Horarium.IntegrationTest.Jobs.Fallback
