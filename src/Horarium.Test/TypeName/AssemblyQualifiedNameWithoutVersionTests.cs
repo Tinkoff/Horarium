@@ -43,7 +43,7 @@ namespace Horarium.Test
 
             Assert.NotNull(instance);
             Assert.IsType<GenericJobWithTwoArguments<GenericJob<FirstNonGenericJob>, GenericJob<SecondNonGenericJob>>>(instance);
-            // Assert.Equal("Horarium.Test.GenericJobWithTwoArguments`2[[Horarium.Test.GenericJob`1[[Horarium.Test.FirstNonGenericJob, Horarium.Test]], Horarium.Test], [Horarium.Test.GenericJob`1[[Horarium.Test.SecondNonGenericJob, Horarium.Test]], Horarium.Test]], Horarium.Test", jobName);
+            Assert.Equal("Horarium.Test.GenericJobWithTwoArguments`2[[Horarium.Test.GenericJob`1[[Horarium.Test.FirstNonGenericJob, Horarium.Test]], Horarium.Test], [Horarium.Test.GenericJob`1[[Horarium.Test.SecondNonGenericJob, Horarium.Test]], Horarium.Test]], Horarium.Test", jobName);
         }
 
         [Fact]

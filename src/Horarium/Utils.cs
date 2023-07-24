@@ -22,14 +22,14 @@ namespace Horarium
 
         public static string AssemblyQualifiedNameWithoutVersion(this Type type)
         {
+            if (string.IsNullOrWhiteSpace(type.FullName))
+            {
+                throw new ArgumentException($"Unable to receive FullName for type {type}");
+            }
+
             if (!type.IsGenericType)
             {
                 return $"{type.FullName}, {type.GetTypeInfo().Assembly.GetName().Name}";
-            }
-
-            if (string.IsNullOrWhiteSpace(type.FullName))
-            {
-                throw new ArgumentException($"Не удалось получить имя тип {type}");
             }
 
             var genericArguments = type
