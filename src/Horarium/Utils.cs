@@ -21,6 +21,18 @@ namespace Horarium
             return JsonConvert.DeserializeObject(json, type, jsonSerializerSettings);
         }
 
+        public static string AssemblyQualifiedNameWithoutVersion(this Type type)
+        {
+            var hasGenericJobAttribute = type.GetCustomAttributes<GenericJob>().Any();
+
+            if (!hasGenericJobAttribute)
+            {
+                return $"{type.FullName}, {type.GetTypeInfo().Assembly.GetName().Name}";
+            }
+
+            return type.AssemblyQualifiedNameWithoutVersionForGenericType();
+        }
+
         private static string AssemblyQualifiedNameWithoutVersionForGenericType(this Type type)
         {
             if (string.IsNullOrWhiteSpace(type.FullName))
@@ -43,18 +55,6 @@ namespace Horarium
             var bracketIndex = type.FullName.IndexOf("[", StringComparison.Ordinal);
 
             return $"{type.FullName.Substring(0, bracketIndex)}[{genericPart}], {type.GetTypeInfo().Assembly.GetName().Name}";
-        }
-
-        public static string AssemblyQualifiedNameWithoutVersion(this Type type, bool genericJob = false)
-        {
-            var hasGenericJobAttribute = type.GetCustomAttributes<GenericJob>().Any();
-
-            if (!hasGenericJobAttribute && !genericJob)
-            {
-                return $"{type.FullName}, {type.GetTypeInfo().Assembly.GetName().Name}";
-            }
-
-            return type.AssemblyQualifiedNameWithoutVersionForGenericType();
         }
 
         public static DateTime? ParseAndGetNextOccurrence(string cron)
