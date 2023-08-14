@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Cronos;
+using Horarium.Attributes;
 using Newtonsoft.Json;
 
 [assembly:InternalsVisibleTo("Horarium.Test")]
@@ -20,7 +21,7 @@ namespace Horarium
             return JsonConvert.DeserializeObject(json, type, jsonSerializerSettings);
         }
 
-        public static string AssemblyQualifiedNameWithoutVersion(this Type type)
+        private static string AssemblyQualifiedNameWithoutVersionForGenericType(this Type type)
         {
             if (string.IsNullOrWhiteSpace(type.FullName))
             {
@@ -34,7 +35,7 @@ namespace Horarium
 
             var genericArguments = type
                 .GetGenericArguments()
-                .Select(typeArgument => $"[{typeArgument.AssemblyQualifiedNameWithoutVersion()}]")
+                .Select(typeArgument => $"[{typeArgument.AssemblyQualifiedNameWithoutVersionForGenericType()}]")
                 .ToArray();
 
             var genericPart = string.Join(", ", genericArguments);
@@ -42,6 +43,18 @@ namespace Horarium
             var bracketIndex = type.FullName.IndexOf("[", StringComparison.Ordinal);
 
             return $"{type.FullName.Substring(0, bracketIndex)}[{genericPart}], {type.GetTypeInfo().Assembly.GetName().Name}";
+        }
+
+        public static string AssemblyQualifiedNameWithoutVersion(this Type type, bool genericJob = false)
+        {
+            var hasGenericJobAttribute = type.GetCustomAttributes<GenericJob>().Any();
+
+            if (!hasGenericJobAttribute && !genericJob)
+            {
+                return $"{type.FullName}, {type.GetTypeInfo().Assembly.GetName().Name}";
+            }
+
+            return type.AssemblyQualifiedNameWithoutVersionForGenericType();
         }
 
         public static DateTime? ParseAndGetNextOccurrence(string cron)
