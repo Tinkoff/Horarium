@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using Xunit;
 
 namespace Horarium.Test.TypeName
@@ -7,7 +6,6 @@ namespace Horarium.Test.TypeName
     public class AssemblyQualifiedNameWithoutVersionTests
     {
         [Fact]
-        [Category("OldBehavior")]
         public void GetName_ForNonGenericJob_ShouldRemoveVersion()
         {
             var jobName = new FirstNonGenericJob().GetType().AssemblyQualifiedNameWithoutVersion();
@@ -34,7 +32,6 @@ namespace Horarium.Test.TypeName
         }
 
         [Fact]
-        [Category("OldBehavior")]
         public void GetName_ForGenericJobWithTwoArguments_ShouldNotRemoveVersionForAllTypes()
         {
             var jobName = new GenericJobWithTwoArguments<FirstNonGenericJob, SecondNonGenericJob>().GetType().AssemblyQualifiedNameWithoutVersion();
@@ -61,7 +58,6 @@ namespace Horarium.Test.TypeName
         }
 
         [Fact]
-        [Category("OldBehavior")]
         public void GetName_ForGenericJobWithTwoNestedGenericArguments_ShouldNotRemoveVersionForAllTypes()
         {
             var jobName = new GenericJobWithTwoArguments<GenericJob<FirstNonGenericJob>, GenericJob<SecondNonGenericJob>>()
@@ -92,7 +88,6 @@ namespace Horarium.Test.TypeName
         }
 
         [Fact]
-        [Category("OldBehavior")]
         public void GetName_ForGenericJobWithSingleGenericArgument_ShouldNotRemoveVersionForAllTypes()
         {
             var jobName = new GenericJob<SecondNonGenericJob>().GetType().AssemblyQualifiedNameWithoutVersion();
@@ -119,7 +114,6 @@ namespace Horarium.Test.TypeName
         }
 
         [Fact]
-        [Category("OldBehavior")]
         public void GetName_ForGenericJobWithSingleNestedGenericArgument_ShouldNotRemoveVersionForAllTypes()
         {
             var jobName = new GenericJob<GenericJob<SecondNonGenericJob>>().GetType().AssemblyQualifiedNameWithoutVersion();
